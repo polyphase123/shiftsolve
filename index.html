@@ -1,901 +1,573 @@
-import React, { useState, useEffect, useMemo } from 'react';
-import { 
-  Search, Clock, MapPin, Star, Calendar, ChevronRight, Menu, X, 
-  CheckCircle, User, Award, Info, QrCode, Share2, Phone, Mail, 
-  LayoutGrid, Download, Zap, PenTool, FileText, Printer, Save, 
-  Compass, Coffee, Beer, Cigarette, BedDouble, CalendarDays, Keyboard,
-  Play
-} from 'lucide-react';
-
-// --- REAL DATA & CONFIG ---
-
-const THEME = "Celebrating 50 Years of Integrity, Innovation, Empowerment, and Excellence";
-const DEV_NAME = "Engr. Franz Xyrlo Tobias, PEE";
-const DEV_CONTACT = "0936 923 8834";
-
-const SPONSORS = [
-  { id: 1, name: "Fuji-Haya Electric", tier: "Platinum", logo: "⚡" },
-  { id: 2, name: "Vertiv", tier: "Gold", logo: "🔋" },
-  { id: 3, name: "Megger", tier: "Gold", logo: "🔌" },
-  { id: 4, name: "Kingsine", tier: "Silver", logo: "📟" },
-];
-
-const EXHIBITORS = [
-  { id: 101, name: "Kingsine Electric Automation", booth: "147", category: "Testing Equipment", desc: "Protection Relay Testing & Calibration" },
-  { id: 102, name: "Safegrid / G&W Electric", booth: "285-287", category: "Power Distribution", desc: "Innovations in resilient power grids" },
-  { id: 103, name: "Fuji-Haya Electric", booth: "Main Hall", category: "Switchgear", desc: "Medium and Low-Voltage Switchgear designs" },
-  { id: 104, name: "Vertiv", booth: "A-12", category: "Data Centers", desc: "Critical digital infrastructure and continuity solutions" },
-  { id: 105, name: "Megger", booth: "B-05", category: "Testing", desc: "Cable fault locating and testing" },
-];
-
-const VENUE_GUIDE = [
-  {
-    category: "Dining",
-    icon: Coffee,
-    color: "text-orange-600 bg-orange-50",
-    items: [
-      { name: "Vikings Luxury Buffet", loc: "SM Mall of Asia (By the Bay)", desc: "Famous for massive international buffet selection." },
-      { name: "Texas Roadhouse", loc: "S Maison (Adjacent to SMX)", desc: "Legendary steaks and ribs. Great for team dinners." },
-      { name: "Brasserie on 3", loc: "Conrad Manila (Level 3)", desc: "Upscale dining with direct access from SMX." },
-      { name: "The Coffee Bean & Tea Leaf", loc: "SMX Ground Level", desc: "Quick coffee breaks between sessions." }
-    ]
-  },
-  {
-    category: "Bars & Social",
-    icon: Beer,
-    color: "text-purple-600 bg-purple-50",
-    items: [
-      { name: "Hard Rock Cafe", loc: "S Maison (Level 2)", desc: "Live music, cocktails, and classic American fare." },
-      { name: "C Lounge", loc: "Conrad Manila", desc: "Sophisticated rooftop bar with Manila Bay sunset views." },
-      { name: "Microtel Roof Deck", loc: "Microtel by Wyndham", desc: "Casual drinks with a view of the MOA Eye." }
-    ]
-  },
-  {
-    category: "Hotels",
-    icon: BedDouble,
-    color: "text-blue-600 bg-blue-50",
-    items: [
-      { name: "Conrad Manila", loc: "Direct Access", desc: "Luxury. Connected to SMX via bridges." },
-      { name: "Microtel by Wyndham", loc: "Coral Way (Walking Distance)", desc: "Convenient & business-friendly." },
-      { name: "Hotel 101 Manila", loc: "EDSA Ext (Short Ride)", desc: "Popular for large delegations." },
-      { name: "Lanson Place", loc: "Mall of Asia Complex", desc: "Serviced apartments for long stays." }
-    ]
-  },
-  {
-    category: "Smoking Areas",
-    icon: Cigarette,
-    color: "text-gray-600 bg-gray-100",
-    items: [
-      { name: "Designated Outdoor Area", loc: "Back of SMX (Parking Side)", desc: "Strictly no smoking inside. Follow green lines to the back." },
-      { name: "Mall of Asia Designated Zones", loc: "Specific outdoor corners", desc: "Look for yellow 'Designated Smoking Area' signs." }
-    ]
-  }
-];
-
-const RAW_EVENTS = [
-  // Nov 24 (Virtual)
-  { id: 1, day: "2025-11-24", start: "08:00", end: "12:00", title: "Philippine Electric Code (PEC) Updates", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
-  { id: 2, day: "2025-11-24", start: "13:00", end: "17:00", title: "Electrical Standards Forum", location: "Zoom / Virtual", category: "Standards", type: "Virtual", points: 4 },
-  
-  // Nov 25 (Virtual)
-  { id: 3, day: "2025-11-25", start: "08:00", end: "12:00", title: "Energy Efficiency & Conservation", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
-  { id: 4, day: "2025-11-25", start: "13:00", end: "17:00", title: "Careers in Maritime Industry", location: "Zoom / Virtual", category: "Career", type: "Virtual", points: 4 },
-
-  // Nov 26 (Physical Starts)
-  { id: 5, day: "2025-11-26", start: "08:00", end: "17:00", title: "EE Research Contest & Colloquium", location: "Function Room 3", category: "Research", type: "Physical", points: 7 },
-  { id: 6, day: "2025-11-26", start: "06:00", end: "14:00", title: "Technical Plant Tour", location: "Pililla Wind Farm", category: "Tour", type: "Physical", points: 0 },
-  { id: 7, day: "2025-11-26", start: "10:00", end: "18:00", title: "3E XPO Opening & Viewing", location: "SMX Halls 1-4", category: "Expo", type: "Physical", points: 0 },
-
-  // Nov 27
-  { id: 8, day: "2025-11-27", start: "08:30", end: "12:00", title: "Grand Opening Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
-  { id: 9, day: "2025-11-27", start: "13:00", end: "17:00", title: "Plenary Technical Sessions", location: "Function Rooms 1-4", category: "Technical", type: "Physical", points: 7 },
-  { id: 10, day: "2025-11-27", start: "18:00", end: "23:00", title: "Practitioners' Night", location: "Ballroom", category: "Social", type: "Physical", points: 0 },
-
-  // Nov 28
-  { id: 11, day: "2025-11-28", start: "08:00", end: "17:00", title: "Simultaneous Technical Sessions", location: "Meeting Rooms 4-8", category: "Technical", type: "Physical", points: 7 },
-  { id: 12, day: "2025-11-28", start: "13:00", end: "16:00", title: "General Membership Meeting", location: "Function Rooms 1-2", category: "Business", type: "Physical", points: 0 },
-
-  // Nov 29
-  { id: 13, day: "2025-11-29", start: "08:00", end: "12:00", title: "RME Technical Sessions", location: "Function Room 3", category: "Technical", type: "Physical", points: 5 },
-  { id: 14, day: "2025-11-29", start: "13:00", end: "15:00", title: "Closing Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
-];
-
-// --- HELPER FUNCTIONS ---
-
-const getEventStatus = (event, currentTime) => {
-  const eventStart = new Date(`${event.day}T${event.start}:00`);
-  const eventEnd = new Date(`${event.day}T${event.end}:00`);
-  if (event.end === "24:00") eventEnd.setHours(23, 59, 59);
-
-  if (currentTime >= eventStart && currentTime <= eventEnd) return 'now';
-  if (currentTime < eventStart) {
-    const diffMs = eventStart - currentTime;
-    const diffHours = diffMs / (1000 * 60 * 60);
-    if (diffHours <= 2 && diffHours > 0) return 'soon';
-    return 'future';
-  }
-  return 'past';
-};
-
-const formatTime = (timeStr) => {
-  const [hour, minute] = timeStr.split(':');
-  const h = parseInt(hour, 10);
-  const ampm = h >= 12 ? 'PM' : 'AM';
-  return `${h % 12 || 12}:${minute} ${ampm}`;
-};
-
-const formatDate = (dateStr) => {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-};
-
-// --- SOUND UTILS ---
-const playCoinSound = () => {
-  try {
-    const AudioContext = window.AudioContext || window.webkitAudioContext;
-    if (!AudioContext) return;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>IIEE 50th Convention Tracker</title>
     
-    const ctx = new AudioContext();
+    <!-- 1. Load Tailwind CSS (Styling) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 2. Load Babel to translate React Code in the browser -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     
-    // Mario Coin: B5 (987.77Hz) for 80ms -> E6 (1318.51Hz) for 350ms
-    const osc1 = ctx.createOscillator();
-    const osc2 = ctx.createOscillator();
-    const gain = ctx.createGain();
-
-    osc1.type = 'square';
-    osc2.type = 'square';
-
-    osc1.frequency.setValueAtTime(988, ctx.currentTime);
-    osc2.frequency.setValueAtTime(1319, ctx.currentTime + 0.08);
-
-    gain.gain.setValueAtTime(0.1, ctx.currentTime);
-    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
-
-    osc1.connect(gain);
-    osc2.connect(gain);
-    gain.connect(ctx.destination);
-
-    osc1.start(ctx.currentTime);
-    osc1.stop(ctx.currentTime + 0.08);
-    
-    osc2.start(ctx.currentTime + 0.08);
-    osc2.stop(ctx.currentTime + 0.5);
-  } catch (e) {
-    console.error("Audio play failed", e);
-  }
-};
-
-// --- MAIN APP COMPONENT ---
-
-export default function IIEEConventionApp() {
-  const [showSplash, setShowSplash] = useState(true); // Splash screen state
-  const [simulatedTime, setSimulatedTime] = useState(new Date("2025-11-27T09:00:00"));
-  const [view, setView] = useState('home'); // home, calendar, exhibitors, cpd, profile, contact, notes, guide
-  const [activeTab, setActiveTab] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [favorites, setFavorites] = useState([]);
-  const [attendedEvents, setAttendedEvents] = useState([]);
-  
-  // NOTE LOGIC
-  const [notes, setNotes] = useState({}); 
-  const [activeNoteId, setActiveNoteId] = useState(null); 
-  const [tempNoteContent, setTempNoteContent] = useState("");
-
-  // CALENDAR LOGIC
-  const [selectedCalendarDate, setSelectedCalendarDate] = useState("2025-11-27");
-
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [notification, setNotification] = useState(null);
-
-  // --- PERSISTENCE ---
-  useEffect(() => {
-    try {
-      const savedFavs = localStorage.getItem('iiee_favorites');
-      if (savedFavs) setFavorites(JSON.parse(savedFavs));
-      
-      const savedAttended = localStorage.getItem('iiee_attended');
-      if (savedAttended) setAttendedEvents(JSON.parse(savedAttended));
-
-      const savedNotes = localStorage.getItem('iiee_notes');
-      if (savedNotes) setNotes(JSON.parse(savedNotes));
-    } catch (e) {
-      console.error("Storage error", e);
+    <!-- 3. Load React and Libraries from the Cloud -->
+    <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.263.1"
+      }
     }
-  }, []);
+    </script>
 
-  useEffect(() => {
-    try {
-      localStorage.setItem('iiee_favorites', JSON.stringify(favorites));
-      localStorage.setItem('iiee_attended', JSON.stringify(attendedEvents));
-      localStorage.setItem('iiee_notes', JSON.stringify(notes));
-    } catch (e) {
-      // Ignore storage errors (e.g. private mode quota)
-    }
-  }, [favorites, attendedEvents, notes]);
-
-  // --- ACTIONS ---
-  const enterApp = () => {
-    playCoinSound();
-    setShowSplash(false);
-  };
-
-  const toggleFavorite = (id) => {
-    if (favorites.includes(id)) {
-      setFavorites(favorites.filter(fid => fid !== id));
-      showNotification("Removed from Agenda");
-    } else {
-      setFavorites([...favorites, id]);
-      showNotification("Added to Agenda");
-    }
-  };
-
-  const markAttended = (id) => {
-    if (attendedEvents.includes(id)) {
-      setAttendedEvents(attendedEvents.filter(aid => aid !== id));
-    } else {
-      setAttendedEvents([...attendedEvents, id]);
-      showNotification("Marked as Attended (+CPD Points)");
-    }
-  };
-
-  const openNoteModal = (eventId) => {
-    setTempNoteContent(notes[eventId] || "");
-    setActiveNoteId(eventId);
-  };
-
-  const saveNoteAndClose = () => {
-    if (activeNoteId) {
-      setNotes(prev => ({ ...prev, [activeNoteId]: tempNoteContent }));
-      setActiveNoteId(null);
-      showNotification("Note Saved!");
-    }
-  };
-
-  const showNotification = (msg) => {
-    setNotification(msg);
-    setTimeout(() => setNotification(null), 2500);
-  };
-
-  // --- PDF GENERATION ---
-  const generatePDF = () => {
-    const notesContent = RAW_EVENTS
-      .filter(e => notes[e.id] && notes[e.id].trim().length > 0)
-      .map(e => `
-        <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
-          <h3 style="margin: 0; color: #1e3a8a;">${e.title}</h3>
-          <p style="margin: 5px 0; font-size: 12px; color: #666;">${formatDate(e.day)} | ${formatTime(e.start)} - ${formatTime(e.end)} | ${e.location}</p>
-          <div style="margin-top: 10px; font-family: monospace; white-space: pre-wrap; background: #f9fafb; padding: 10px; border-radius: 5px;">${notes[e.id]}</div>
-        </div>
-      `).join('');
-
-    if (!notesContent) {
-      showNotification("No notes to export!");
-      return;
-    }
-
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <title>My IIEE Convention Notes</title>
-            <style>
-              body { font-family: sans-serif; padding: 40px; color: #333; }
-              h1 { color: #1e3a8a; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; }
-              .header { margin-bottom: 30px; }
-              .footer { margin-top: 50px; font-size: 10px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
-            </style>
-          </head>
-          <body>
-            <div class="header">
-              <h1>My Convention Notes</h1>
-              <p><strong>IIEE 50th Annual National Convention & 3EXPO 2025</strong></p>
-              <p>Generated on: ${new Date().toLocaleString()}</p>
-            </div>
-            ${notesContent}
-            <div class="footer">
-              Generated by IIEE Convention App | Developed by ${DEV_NAME}
-            </div>
-            <script>
-              window.onload = function() { window.print(); }
-            </script>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-    } else {
-      showNotification("Popup blocked. Allow popups to print.");
-    }
-  };
-
-  // --- COMPUTED DATA ---
-  const processedEvents = useMemo(() => {
-    return RAW_EVENTS.map(event => ({
-      ...event,
-      status: getEventStatus(event, simulatedTime),
-      isFavorite: favorites.includes(event.id),
-      isAttended: attendedEvents.includes(event.id),
-      hasNote: notes[event.id] && notes[event.id].trim().length > 0
-    })).sort((a, b) => new Date(`${a.day}T${a.start}`) - new Date(`${b.day}T${b.start}`));
-  }, [simulatedTime, favorites, attendedEvents, notes]);
-
-  const filteredEvents = useMemo(() => {
-    let data = processedEvents;
-    if (searchQuery) {
-      const lowerQ = searchQuery.toLowerCase();
-      data = data.filter(e => e.title.toLowerCase().includes(lowerQ) || e.location.toLowerCase().includes(lowerQ));
-    }
-    
-    // Calendar View Filter
-    if (view === 'calendar') {
-      return data.filter(e => e.day === selectedCalendarDate);
-    }
-
-    switch (activeTab) {
-      case 'now': return data.filter(e => e.status === 'now');
-      case 'soon': return data.filter(e => e.status === 'soon');
-      case 'favorites': return data.filter(e => e.isFavorite);
-      default: return data;
-    }
-  }, [processedEvents, searchQuery, activeTab, view, selectedCalendarDate]);
-
-  const totalCPD = attendedEvents.reduce((sum, id) => {
-    const ev = RAW_EVENTS.find(e => e.id === id);
-    return sum + (ev ? ev.points : 0);
-  }, 0);
-
-  // --- RENDER SECTIONS ---
-
-  // 1. VENUE GUIDE VIEW
-  const renderGuide = () => (
-    <div className="p-4 pb-24 animate-fade-in-up">
-       <h2 className="text-xl font-bold text-gray-800 flex items-center mb-4">
-         <Compass className="mr-2 text-blue-600" /> Venue & Area Guide
-       </h2>
-       
-       <div className="space-y-6">
-         {VENUE_GUIDE.map((section, idx) => (
-           <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-             <div className={`p-3 font-bold flex items-center gap-2 ${section.color}`}>
-               <section.icon size={18} /> {section.category}
-             </div>
-             <div className="divide-y divide-gray-100">
-               {section.items.map((item, i) => (
-                 <div key={i} className="p-4 hover:bg-gray-50 transition-colors">
-                   <div className="flex justify-between items-start">
-                     <h4 className="font-bold text-gray-800">{item.name}</h4>
-                     <span className="text-[10px] uppercase font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">{item.loc}</span>
-                   </div>
-                   <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
-                 </div>
-               ))}
-             </div>
-           </div>
-         ))}
-       </div>
-    </div>
-  );
-
-  // 2. EXHIBITORS VIEW
-  const renderExhibitors = () => (
-    <div className="p-4 space-y-4 pb-24 animate-fade-in-up">
-      <h2 className="text-xl font-bold text-gray-800 flex items-center">
-        <LayoutGrid className="mr-2 text-blue-600" /> 3E XPO Exhibitors
-      </h2>
-      <div className="grid gap-4">
-        {EXHIBITORS.map(ex => (
-          <div key={ex.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
-            <div>
-              <h3 className="font-bold text-lg text-gray-900">{ex.name}</h3>
-              <p className="text-xs text-gray-500">{ex.desc}</p>
-              <span className="inline-block mt-2 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
-                {ex.category}
-              </span>
-            </div>
-            <div className="text-right">
-              <span className="block text-xs text-gray-400 uppercase">Booth</span>
-              <span className="text-xl font-bold text-blue-600">{ex.booth}</span>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-
-  // 3. CALENDAR VIEW
-  const renderCalendar = () => {
-    const daysInMonth = 30;
-    const startDayOffset = 6; 
-    const grid = [];
-    for (let i = 0; i < startDayOffset; i++) grid.push(null);
-    for (let i = 1; i <= daysInMonth; i++) grid.push(i);
-
-    return (
-      <div className="p-4 pb-24 animate-fade-in-up">
-        <h2 className="text-xl font-bold text-gray-800 flex items-center mb-4">
-          <CalendarDays className="mr-2 text-blue-600" /> Event Calendar
-        </h2>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="flex justify-between items-center mb-4">
-             <h3 className="font-bold text-lg text-gray-800">November 2025</h3>
-             <div className="flex gap-1">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
-                <span className="text-xs text-gray-500">Event Day</span>
-             </div>
-          </div>
-          
-          <div className="grid grid-cols-7 gap-1 text-center mb-2">
-            {['S','M','T','W','T','F','S'].map((d,i) => (
-              <div key={i} className="text-xs font-bold text-gray-400 py-1">{d}</div>
-            ))}
-          </div>
-          
-          <div className="grid grid-cols-7 gap-1">
-             {grid.map((day, idx) => {
-               if (!day) return <div key={idx} className="aspect-square"></div>;
-               
-               const dateStr = `2025-11-${String(day).padStart(2, '0')}`;
-               const hasEvent = RAW_EVENTS.some(e => e.day === dateStr);
-               const isSelected = selectedCalendarDate === dateStr;
-
-               return (
-                 <button 
-                   key={idx}
-                   disabled={!hasEvent}
-                   onClick={() => setSelectedCalendarDate(dateStr)}
-                   className={`aspect-square rounded-lg flex flex-col items-center justify-center relative transition-all ${
-                     isSelected 
-                       ? 'bg-blue-600 text-white shadow-md scale-105 z-10' 
-                       : hasEvent 
-                         ? 'bg-blue-50 text-blue-900 hover:bg-blue-100 font-bold' 
-                         : 'text-gray-300'
-                   }`}
-                 >
-                   <span className="text-sm">{day}</span>
-                   {hasEvent && !isSelected && (
-                     <span className="w-1 h-1 bg-blue-400 rounded-full mt-1"></span>
-                   )}
-                 </button>
-               );
-             })}
-          </div>
-        </div>
-
-        <div>
-           <h3 className="font-bold text-gray-600 text-sm uppercase mb-3 flex items-center">
-             Events for {new Date(selectedCalendarDate).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}
-           </h3>
-           
-           {filteredEvents.length === 0 ? (
-             <div className="text-center py-8 text-gray-400 bg-white rounded-xl border border-dashed">
-               No events scheduled for this day.
-             </div>
-           ) : (
-             <div className="space-y-3">
-               {filteredEvents.map(event => (
-                 <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border border-l-4 border-l-blue-500">
-                    <div className="flex justify-between">
-                       <span className="text-blue-900 font-bold text-xs">{formatTime(event.start)} - {formatTime(event.end)}</span>
-                       <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-bold uppercase">{event.category}</span>
-                    </div>
-                    <h4 className="font-bold text-gray-800 mt-1">{event.title}</h4>
-                    <div className="flex items-center text-xs text-gray-500 mt-1">
-                      <MapPin size={10} className="mr-1" /> {event.location}
-                    </div>
-                 </div>
-               ))}
-             </div>
-           )}
-        </div>
-      </div>
-    );
-  };
-
-  // 4. MY NOTES VIEW
-  const renderNotes = () => {
-    const eventsWithNotes = processedEvents.filter(e => e.hasNote);
-
-    return (
-      <div className="p-4 pb-24 animate-fade-in-up">
-         <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-800 flex items-center">
-              <FileText className="mr-2 text-blue-600" /> My Notes
-            </h2>
-            <button 
-              onClick={generatePDF}
-              className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-700 shadow-md transition-transform active:scale-95"
-            >
-              <Printer size={14} /> Save PDF
-            </button>
-         </div>
-
-         {eventsWithNotes.length === 0 ? (
-           <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
-             <PenTool className="mx-auto text-gray-300 mb-2" size={32} />
-             <p className="text-gray-500 font-medium">No notes yet.</p>
-             <p className="text-xs text-gray-400 mt-1">Tap the pen icon on any event to start writing.</p>
-           </div>
-         ) : (
-           <div className="space-y-4">
-             {eventsWithNotes.map(event => (
-               <div key={event.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-                 <div className="flex justify-between items-start mb-2">
-                   <h3 className="font-bold text-gray-800 text-sm">{event.title}</h3>
-                   <button onClick={() => openNoteModal(event.id)} className="text-blue-500 p-1"><PenTool size={14} /></button>
-                 </div>
-                 <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 text-sm font-handwriting text-gray-700 whitespace-pre-wrap">
-                   {notes[event.id]}
-                 </div>
-                 <p className="text-[10px] text-gray-400 mt-2 text-right">{formatDate(event.day)}</p>
-               </div>
-             ))}
-           </div>
-         )}
-      </div>
-    );
-  };
-
-  // 5. PROFILE / QR VIEW
-  const renderProfile = () => (
-    <div className="p-4 flex flex-col items-center pb-24 animate-fade-in-up">
-      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm text-center border border-gray-100 mt-4 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500"></div>
-        <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
-           <User size={48} className="text-gray-400"/>
-        </div>
-        <h2 className="text-2xl font-bold text-gray-900">Engr. Juan Dela Cruz</h2>
-        <p className="text-blue-600 font-medium mb-6">PEE License #123456</p>
-        <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 mb-6">
-          <QrCode size={120} className="mx-auto text-gray-800" />
-          <p className="text-xs text-gray-400 mt-2">Scan for Registration / Attendance</p>
-        </div>
-      </div>
-    </div>
-  );
-
-  // 6. CPD TRACKER
-  const renderCPD = () => (
-    <div className="p-4 space-y-6 pb-24 animate-fade-in-up">
-      <div className="bg-gradient-to-br from-blue-900 to-indigo-800 rounded-2xl p-6 text-white text-center shadow-lg">
-        <div className="text-6xl font-black mb-2 flex items-center justify-center">
-          {totalCPD} <span className="text-2xl ml-2 opacity-50 font-normal">pts</span>
-        </div>
-        <div className="w-full bg-blue-950/50 rounded-full h-3 mb-2">
-          <div className="bg-yellow-400 h-3 rounded-full" style={{ width: `${Math.min((totalCPD / 40) * 100, 100)}%` }}></div>
-        </div>
-        <p className="text-xs text-blue-300">Target: 40 points</p>
-      </div>
-
-      <div>
-        <h3 className="font-bold text-gray-700 mb-4 flex items-center"><CheckCircle size={18} className="mr-2" /> Mark Attendance</h3>
-        <div className="space-y-3">
-          {RAW_EVENTS.filter(e => e.points > 0).map(event => (
-            <div key={event.id} onClick={() => markAttended(event.id)} className={`p-4 rounded-xl border flex justify-between items-center cursor-pointer ${attendedEvents.includes(event.id) ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
-              <div>
-                <div className="font-bold text-gray-800">{event.title}</div>
-                <div className="text-xs text-gray-500">{formatDate(event.day)} • {event.points} pts</div>
-              </div>
-              {attendedEvents.includes(event.id) && <CheckCircle className="text-green-500" size={20} />}
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-
-  // --- NOTE TAKING MODAL ---
-  const renderNoteModal = () => {
-    if (!activeNoteId) return null;
-    const event = RAW_EVENTS.find(e => e.id === activeNoteId);
-    return (
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in">
-        <div className="bg-white w-full sm:w-96 rounded-t-2xl sm:rounded-2xl p-6 h-[80vh] flex flex-col shadow-2xl animate-slide-in-up">
-          <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
-            <div className="flex items-center gap-2">
-              <Keyboard size={20} className="text-blue-600"/>
-              <div>
-                <h3 className="font-bold text-gray-800 text-lg">Type Note</h3>
-                <p className="text-xs text-gray-500 truncate max-w-[200px]">{event.title}</p>
-              </div>
-            </div>
-            <button onClick={() => setActiveNoteId(null)} className="p-2 bg-gray-100 rounded-full"><X size={18} /></button>
-          </div>
-          <div className="flex-1 relative">
-            <textarea 
-              inputMode="text"
-              className="w-full h-full bg-yellow-50 p-4 rounded-xl border border-yellow-100 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-gray-400 text-gray-700 leading-relaxed font-sans text-base"
-              placeholder="Use your keyboard to type notes here..."
-              value={tempNoteContent}
-              onChange={(e) => setTempNoteContent(e.target.value)}
-              autoFocus
-            />
-          </div>
-          <button onClick={saveNoteAndClose} className="mt-4 w-full bg-blue-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-800 transition-colors">
-            <Save size={18} /> Save & Close
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  // --- SPLASH SCREEN ---
-  if (showSplash) {
-    return (
-      <div className="flex flex-col items-center justify-center h-screen bg-gradient-to-br from-blue-900 to-indigo-900 text-white p-6 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/circuit-board.png')] opacity-10"></div>
-        <div className="z-10 flex flex-col items-center animate-fade-in-up">
-          <div className="w-24 h-24 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center text-blue-950 font-black text-4xl shadow-2xl border-4 border-white/20 mb-6 animate-bounce">
-            50
-          </div>
-          <h1 className="text-3xl font-black text-center leading-tight mb-2">IIEE 50th ANC</h1>
-          <p className="text-blue-200 text-center text-sm max-w-xs mb-12 opacity-90">
-            Celebrating 50 Years of Integrity, Innovation, Empowerment, and Excellence
-          </p>
-          <button 
-            onClick={enterApp}
-            className="group relative bg-white text-blue-900 px-8 py-4 rounded-full font-bold text-lg shadow-xl hover:scale-105 transition-transform flex items-center gap-2"
-          >
-            <Play className="fill-current" size={20} />
-            ENTER APP
-            <div className="absolute -inset-1 bg-white/30 rounded-full blur opacity-0 group-hover:opacity-100 transition-opacity"></div>
-          </button>
-          <p className="mt-8 text-xs text-blue-400 opacity-60">Turn on sound for best experience 🔊</p>
-        </div>
-      </div>
-    );
-  }
-
-  // --- MAIN UI ---
-
-  return (
-    <div className="flex flex-col h-screen bg-gray-50 text-slate-800 font-sans overflow-hidden relative">
-      
-      {/* HEADER */}
-      <header className="bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 text-white shadow-xl z-20 shrink-0 relative overflow-hidden">
+    <style>
+        /* Custom Scrollbar for mobile feel */
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 2px; }
         
-        {/* DEVELOPER BANNER */}
-        <div className="bg-black/30 w-full px-4 py-1 flex justify-between items-center text-[10px] sm:text-xs font-medium border-b border-white/10 backdrop-blur-sm">
-          <div className="flex items-center gap-2">
-             <span className="text-yellow-400">⚡ Developed by:</span>
-             <span className="font-bold tracking-wide">{DEV_NAME}</span>
-          </div>
-          <a href={`tel:${DEV_CONTACT}`} className="flex items-center gap-1 hover:text-yellow-300">
-             <Phone size={10} /> {DEV_CONTACT}
-          </a>
-        </div>
+        /* Animations */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out; }
+        .animate-slide-up { animation: slideUp 0.4s ease-out; }
         
-        <div className="p-4 flex justify-between items-start relative z-10">
-          <div className="flex items-center space-x-3">
-             <div className="w-11 h-11 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center text-blue-950 font-black text-xl shadow-lg border-2 border-white/20">
-               50
-             </div>
-             <div>
-               <h1 className="text-lg font-bold leading-tight">IIEE National Convention</h1>
-               <div className="text-[10px] text-yellow-200 leading-tight max-w-[200px] mt-1 font-medium opacity-90">
-                 {THEME.substring(0, 45)}...
-               </div>
-             </div>
-          </div>
-          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-gray-100 text-slate-800 h-screen w-screen overflow-hidden select-none">
 
-        {/* TIME TRAVEL (IMPROVED) */}
-        {view === 'home' && (
-          <div className="px-4 pb-2">
-            <div className="bg-black/20 backdrop-blur-md rounded-lg p-2 flex items-center justify-between text-xs border border-white/10">
-               <div className="flex items-center space-x-2">
-                 <Clock size={14} className="text-yellow-400" />
-                 <span className="text-blue-50 font-mono tracking-wide">
-                   {simulatedTime.toLocaleDateString('en-US', {month:'short', day:'numeric'})} • {simulatedTime.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}
-                 </span>
-               </div>
-               <div className="flex gap-1">
-                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() - 24*60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">-1D</button>
-                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() - 60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">-1H</button>
-                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() + 60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">+1H</button>
-                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() + 24*60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">+1D</button>
-               </div>
-            </div>
-          </div>
-        )}
+    <!-- App Root Container -->
+    <div id="root" class="h-full w-full"></div>
 
-        {/* SEARCH (Only on Home/Exhibitors) */}
-        {(view === 'home' || view === 'exhibitors') && (
-          <div className="px-4 pb-4 mt-2">
-            <div className="relative group">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 group-focus-within:text-yellow-400 transition-colors" size={18} />
-              <input 
-                type="text" 
-                placeholder={view === 'exhibitors' ? "Search exhibitors..." : "Search sessions, topics..."}
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 bg-blue-900/50 backdrop-blur-sm border border-blue-700/50 rounded-xl text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 text-sm transition-all"
-              />
-            </div>
-          </div>
-        )}
+    <!-- 4. The Application Logic -->
+    <script type="text/babel" data-type="module">
+        import React, { useState, useEffect, useMemo } from 'react';
+        import { createRoot } from 'react-dom/client';
+        import { 
+            Search, Clock, MapPin, Star, Calendar, ChevronRight, Menu, X, 
+            CheckCircle, User, Award, Info, QrCode, Share2, Phone, Mail, 
+            LayoutGrid, Download, Zap, PenTool, FileText, Printer, Save, 
+            Compass, Coffee, Beer, Cigarette, BedDouble, CalendarDays, Keyboard,
+            Play
+        } from 'lucide-react';
 
-        {/* TABS (Only on Home) */}
-        {view === 'home' && (
-          <div className="flex px-4 space-x-1 overflow-x-auto no-scrollbar pb-0 mt-1">
-            {['all', 'now', 'soon', 'favorites'].map(tab => (
-              <button 
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`pb-3 px-3 text-xs font-bold uppercase tracking-wide border-b-[3px] transition-all whitespace-nowrap ${
-                  activeTab === tab 
-                  ? 'border-yellow-400 text-yellow-400' 
-                  : 'border-transparent text-blue-300 hover:text-white'
-                }`}
-              >
-                {tab === 'favorites' ? 'My Agenda' : tab}
-              </button>
-            ))}
-          </div>
-        )}
-      </header>
+        // --- CONFIGURATION ---
+        const THEME = "Celebrating 50 Years of Integrity, Innovation, Empowerment, and Excellence";
+        const DEV_NAME = "Engr. Franz Xyrlo Tobias, PEE";
+        const DEV_CONTACT = "0936 923 8834";
 
-      {/* MENU OVERLAY */}
-      {isMenuOpen && (
-        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
-          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 animate-slide-in-right" onClick={e => e.stopPropagation()}>
-             <div className="p-6 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
-               <h2 className="text-xl font-bold text-blue-900">Menu</h2>
-               <button onClick={() => setIsMenuOpen(false)} className="p-1 bg-white rounded-full shadow-sm"><X className="text-gray-500" size={20}/></button>
-             </div>
-             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-               {[
-                 { id: 'home', icon: Calendar, label: "Schedule List" },
-                 { id: 'calendar', icon: CalendarDays, label: "Full Calendar" },
-                 { id: 'guide', icon: Compass, label: "Venue Guide" },
-                 { id: 'notes', icon: FileText, label: "My Notes & PDF" },
-                 { id: 'exhibitors', icon: LayoutGrid, label: "Exhibitors & Map" },
-                 { id: 'cpd', icon: Award, label: "CPD Tracker" },
-                 { id: 'profile', icon: User, label: "My Badge" },
-               ].map(item => (
-                 <button 
-                    key={item.id}
-                    onClick={() => { setView(item.id); setIsMenuOpen(false); }}
-                    className={`w-full flex items-center space-x-3 p-3 rounded-xl font-medium transition-colors ${
-                      view === item.id ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                 >
-                   <item.icon size={20} />
-                   <span>{item.label}</span>
-                 </button>
-               ))}
-             </nav>
-             <div className="p-6 bg-gray-50 border-t border-gray-200">
-               <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-3">App Developed By</p>
-               <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold shadow-md">FT</div>
-                  <div>
-                    <p className="text-sm font-bold text-gray-800">Engr. Franz Tobias</p>
-                    <p className="text-xs text-blue-600 font-bold">PEE</p>
-                  </div>
-               </div>
-             </div>
-          </div>
-        </div>
-      )}
+        // --- DATA ---
+        const SPONSORS = [
+            { id: 1, name: "Fuji-Haya Electric", tier: "Platinum", logo: "⚡" },
+            { id: 2, name: "Vertiv", tier: "Gold", logo: "🔋" },
+            { id: 3, name: "Megger", tier: "Gold", logo: "🔌" },
+            { id: 4, name: "Kingsine", tier: "Silver", logo: "📟" },
+        ];
 
-      {/* MAIN CONTENT AREA */}
-      <main className="flex-1 overflow-y-auto bg-gray-100 scroll-smooth">
-        
-        {view === 'exhibitors' && renderExhibitors()}
-        {view === 'cpd' && renderCPD()}
-        {view === 'profile' && renderProfile()}
-        {view === 'notes' && renderNotes()}
-        {view === 'guide' && renderGuide()}
-        {view === 'calendar' && renderCalendar()}
+        const EXHIBITORS = [
+            { id: 101, name: "Kingsine Electric Automation", booth: "147", category: "Testing", desc: "Protection Relay Testing" },
+            { id: 102, name: "Safegrid / G&W Electric", booth: "285", category: "Power", desc: "Resilient power grids" },
+            { id: 103, name: "Fuji-Haya Electric", booth: "Main", category: "Switchgear", desc: "Low-Voltage Switchgear" },
+            { id: 104, name: "Vertiv", booth: "A-12", category: "Data Center", desc: "Critical infrastructure" },
+            { id: 105, name: "Megger", booth: "B-05", category: "Testing", desc: "Cable fault locating" },
+        ];
 
-        {/* SCHEDULE LIST (HOME VIEW) */}
-        {view === 'home' && (
-          <div className="p-4 space-y-3 pb-24 animate-fade-in-up">
-            {filteredEvents.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                <Calendar size={48} className="mb-4 opacity-30" />
-                <p>No events found.</p>
-              </div>
-            ) : (
-              filteredEvents.map((event, index) => {
-                const showDateHeader = index === 0 || event.day !== filteredEvents[index - 1].day;
+        const VENUE_GUIDE = [
+            { category: "Dining", icon: Coffee, color: "text-orange-600 bg-orange-50", items: [
+                { name: "Vikings Luxury Buffet", loc: "SM MOA (By the Bay)", desc: "Massive international buffet." },
+                { name: "Texas Roadhouse", loc: "S Maison", desc: "Legendary steaks and ribs." },
+                { name: "The Coffee Bean", loc: "SMX Ground Level", desc: "Quick coffee breaks." }
+            ]},
+            { category: "Bars", icon: Beer, color: "text-purple-600 bg-purple-50", items: [
+                { name: "Hard Rock Cafe", loc: "S Maison (Lvl 2)", desc: "Live music & cocktails." },
+                { name: "C Lounge", loc: "Conrad Manila", desc: "Rooftop sunset views." }
+            ]},
+            { category: "Hotels", icon: BedDouble, color: "text-blue-600 bg-blue-50", items: [
+                { name: "Conrad Manila", loc: "Direct Access", desc: "Connected via bridges." },
+                { name: "Microtel by Wyndham", loc: "Coral Way", desc: "Walking distance." },
+                { name: "Hotel 101 Manila", loc: "EDSA Ext", desc: "Popular for delegations." }
+            ]},
+            { category: "Smoking", icon: Cigarette, color: "text-gray-600 bg-gray-100", items: [
+                { name: "Designated Area", loc: "Back of SMX", desc: "Strictly outdoor only." }
+            ]}
+        ];
+
+        const RAW_EVENTS = [
+            { id: 1, day: "2025-11-24", start: "08:00", end: "12:00", title: "PEC Updates", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
+            { id: 2, day: "2025-11-24", start: "13:00", end: "17:00", title: "Standards Forum", location: "Zoom / Virtual", category: "Standards", type: "Virtual", points: 4 },
+            { id: 3, day: "2025-11-25", start: "08:00", end: "12:00", title: "Energy Efficiency", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
+            { id: 5, day: "2025-11-26", start: "08:00", end: "17:00", title: "EE Research Contest", location: "Function Room 3", category: "Research", type: "Physical", points: 7 },
+            { id: 6, day: "2025-11-26", start: "06:00", end: "14:00", title: "Plant Tour: Pililla Wind Farm", location: "Off-site", category: "Tour", type: "Physical", points: 0 },
+            { id: 7, day: "2025-11-26", start: "10:00", end: "18:00", title: "3E XPO Opening", location: "SMX Halls 1-4", category: "Expo", type: "Physical", points: 0 },
+            { id: 8, day: "2025-11-27", start: "08:30", end: "12:00", title: "Grand Opening Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+            { id: 9, day: "2025-11-27", start: "13:00", end: "17:00", title: "Plenary Sessions", location: "Function Rooms 1-4", category: "Technical", type: "Physical", points: 7 },
+            { id: 10, day: "2025-11-27", start: "18:00", end: "23:00", title: "Practitioners' Night", location: "Ballroom", category: "Social", type: "Physical", points: 0 },
+            { id: 11, day: "2025-11-28", start: "08:00", end: "17:00", title: "Simultaneous Technical", location: "Meeting Rooms 4-8", category: "Technical", type: "Physical", points: 7 },
+            { id: 12, day: "2025-11-28", start: "13:00", end: "16:00", title: "Gen. Membership Meeting", location: "Function Rooms 1-2", category: "Business", type: "Physical", points: 0 },
+            { id: 13, day: "2025-11-29", start: "08:00", end: "12:00", title: "RME Technical Session", location: "Function Room 3", category: "Technical", type: "Physical", points: 5 },
+            { id: 14, day: "2025-11-29", start: "13:00", end: "15:00", title: "Closing Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+        ];
+
+        // --- HELPERS ---
+        const formatTime = (timeStr) => {
+            const [h, m] = timeStr.split(':');
+            const hour = parseInt(h);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const h12 = hour % 12 || 12;
+            return `${h12}:${m} ${ampm}`;
+        };
+
+        const formatDate = (dateStr) => {
+            return new Date(dateStr).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+        };
+
+        const getStatus = (ev, simTime) => {
+            const start = new Date(`${ev.day}T${ev.start}:00`);
+            const end = new Date(`${ev.day}T${ev.end}:00`);
+            if (simTime >= start && simTime <= end) return 'now';
+            if (simTime < start && (start - simTime) < 7200000) return 'soon'; // 2 hours
+            return 'future';
+        };
+
+        const playMarioCoin = () => {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+                const osc1 = ctx.createOscillator(); const osc2 = ctx.createOscillator(); const gain = ctx.createGain();
+                osc1.type = 'square'; osc2.type = 'square';
+                osc1.frequency.setValueAtTime(988, ctx.currentTime);
+                osc2.frequency.setValueAtTime(1319, ctx.currentTime + 0.08);
+                gain.gain.setValueAtTime(0.1, ctx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+                osc1.connect(gain); osc2.connect(gain); gain.connect(ctx.destination);
+                osc1.start(ctx.currentTime); osc1.stop(ctx.currentTime + 0.08);
+                osc2.start(ctx.currentTime + 0.08); osc2.stop(ctx.currentTime + 0.5);
+            } catch(e) { console.log("Audio blocked"); }
+        };
+
+        // --- MAIN COMPONENT ---
+        function App() {
+            const [splash, setSplash] = useState(true);
+            const [time, setTime] = useState(new Date("2025-11-27T09:00:00"));
+            const [view, setView] = useState('home');
+            const [tab, setTab] = useState('all');
+            const [query, setQuery] = useState('');
+            const [favs, setFavs] = useState(() => JSON.parse(localStorage.getItem('favs') || '[]'));
+            const [notes, setNotes] = useState(() => JSON.parse(localStorage.getItem('notes') || '{}'));
+            const [attended, setAttended] = useState(() => JSON.parse(localStorage.getItem('attended') || '[]'));
+            const [menuOpen, setMenuOpen] = useState(false);
+            
+            // Note Modal State
+            const [noteId, setNoteId] = useState(null);
+            const [noteText, setNoteText] = useState("");
+            const [notify, setNotify] = useState(null);
+
+            // Calendar State
+            const [selectedCalendarDate, setSelectedCalendarDate] = useState("2025-11-27");
+
+            // Persist Data
+            useEffect(() => { localStorage.setItem('favs', JSON.stringify(favs)); }, [favs]);
+            useEffect(() => { localStorage.setItem('notes', JSON.stringify(notes)); }, [notes]);
+            useEffect(() => { localStorage.setItem('attended', JSON.stringify(attended)); }, [attended]);
+
+            const showNotify = (msg) => {
+                setNotify(msg);
+                setTimeout(() => setNotify(null), 2000);
+            };
+
+            const toggleFav = (id) => {
+                setFavs(prev => prev.includes(id) ? prev.filter(i => i !== id) : [...prev, id]);
+                showNotify(favs.includes(id) ? "Removed from Agenda" : "Added to Agenda");
+            };
+
+            const saveNote = () => {
+                setNotes(prev => ({ ...prev, [noteId]: noteText }));
+                setNoteId(null);
+                showNotify("Note Saved!");
+            };
+
+            const generatePDF = () => {
+                const content = RAW_EVENTS.filter(e => notes[e.id]).map(e => 
+                    `${e.title}\n${e.day} | ${e.location}\nNOTE: ${notes[e.id]}\n----------------`
+                ).join('\n\n');
+                
+                if(!content) return showNotify("No notes to print!");
+                
+                const win = window.open('', '_blank');
+                win.document.write(`<pre>${content}\n\nGenerated by IIEE App</pre>`);
+                win.print();
+            };
+
+            const filteredEvents = useMemo(() => {
+                let d = RAW_EVENTS.map(e => ({
+                    ...e, 
+                    status: getStatus(e, time),
+                    isFav: favs.includes(e.id),
+                    hasNote: !!notes[e.id]
+                })).sort((a,b) => new Date(`${a.day}T${a.start}`) - new Date(`${b.day}T${b.start}`));
+
+                if(query) d = d.filter(e => e.title.toLowerCase().includes(query.toLowerCase()));
+                if(view === 'calendar') return d.filter(e => e.day === selectedCalendarDate); // Calendar filter
+                if(tab === 'now') return d.filter(e => e.status === 'now');
+                if(tab === 'soon') return d.filter(e => e.status === 'soon');
+                if(tab === 'fav') return d.filter(e => e.isFav);
+                return d;
+            }, [time, tab, query, favs, notes, view, selectedCalendarDate]);
+
+            const cpdTotal = attended.reduce((acc, id) => acc + (RAW_EVENTS.find(e => e.id === id)?.points || 0), 0);
+
+            // --- RENDER CALENDAR ---
+            const renderCalendar = () => {
+                const daysInMonth = 30;
+                const startDayOffset = 6; 
+                const grid = [];
+                for (let i = 0; i < startDayOffset; i++) grid.push(null);
+                for (let i = 1; i <= daysInMonth; i++) grid.push(i);
+
                 return (
-                  <React.Fragment key={event.id}>
-                    {showDateHeader && activeTab === 'all' && (
-                      <div className="sticky top-0 z-10 bg-gray-100/95 backdrop-blur py-2 mt-2">
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center px-1">
-                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                          {formatDate(event.day)}
-                        </h3>
-                      </div>
-                    )}
-                    
-                    <div className={`relative bg-white rounded-xl shadow-sm border transition-all duration-200 active:scale-[0.99] ${
-                      event.status === 'now' ? 'border-l-4 border-l-red-500 shadow-md' : 
-                      event.status === 'soon' ? 'border-l-4 border-l-orange-400' : 
-                      'border-l-4 border-l-blue-500'
-                    }`}>
-                      <div className="p-4">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <span className={`text-sm font-bold ${event.status === 'now' ? 'text-red-600' : 'text-blue-900'}`}>
-                              {formatTime(event.start)} - {formatTime(event.end)}
-                            </span>
-                            {event.status === 'now' && <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 animate-pulse">LIVE</span>}
-                            {event.type === 'Virtual' && <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-600">VIRTUAL</span>}
-                          </div>
-                          <button onClick={() => toggleFavorite(event.id)}>
-                            <Star size={18} className={event.isFavorite ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
-                          </button>
+                    <div className="animate-slide-up">
+                        <h2 className="text-xl font-bold text-blue-900 flex items-center mb-4">
+                            <CalendarDays className="mr-2 text-blue-600" /> Event Calendar
+                        </h2>
+                        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="font-bold text-lg text-gray-800">November 2025</h3>
+                                <div className="flex gap-1">
+                                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                                    <span className="text-xs text-gray-500">Event Day</span>
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-7 gap-1 text-center mb-2">
+                                {['S','M','T','W','T','F','S'].map((d,i) => (
+                                    <div key={i} className="text-xs font-bold text-gray-400 py-1">{d}</div>
+                                ))}
+                            </div>
+                            <div className="grid grid-cols-7 gap-1">
+                                {grid.map((day, idx) => {
+                                    if (!day) return <div key={idx} className="aspect-square"></div>;
+                                    const dateStr = `2025-11-${String(day).padStart(2, '0')}`;
+                                    const hasEvent = RAW_EVENTS.some(e => e.day === dateStr);
+                                    const isSelected = selectedCalendarDate === dateStr;
+                                    return (
+                                        <button 
+                                            key={idx}
+                                            disabled={!hasEvent}
+                                            onClick={() => setSelectedCalendarDate(dateStr)}
+                                            className={`aspect-square rounded-lg flex flex-col items-center justify-center relative transition-all ${
+                                                isSelected ? 'bg-blue-600 text-white shadow-md scale-105 z-10' 
+                                                : hasEvent ? 'bg-blue-50 text-blue-900 hover:bg-blue-100 font-bold' 
+                                                : 'text-gray-300'
+                                            }`}
+                                        >
+                                            <span className="text-sm">{day}</span>
+                                            {hasEvent && !isSelected && <span className="w-1 h-1 bg-blue-400 rounded-full mt-1"></span>}
+                                        </button>
+                                    );
+                                })}
+                            </div>
                         </div>
-                        
-                        <h3 className="text-base font-bold text-gray-800 leading-snug mb-2">{event.title}</h3>
-                        
-                        <div className="flex items-center text-xs text-gray-500 mb-3">
-                          <MapPin size={12} className="mr-1" /> {event.location}
+                        <div>
+                            <h3 className="font-bold text-gray-600 text-sm uppercase mb-3 flex items-center">
+                                Events for {new Date(selectedCalendarDate).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}
+                            </h3>
+                            {filteredEvents.length === 0 ? (
+                                <div className="text-center py-8 text-gray-400 bg-white rounded-xl border border-dashed">
+                                    No events scheduled for this day.
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {filteredEvents.map(event => (
+                                        <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+                                            <div className="flex justify-between">
+                                                <span className="text-blue-900 font-bold text-xs">{formatTime(event.start)} - {formatTime(event.end)}</span>
+                                                <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-bold uppercase">{event.category}</span>
+                                            </div>
+                                            <h4 className="font-bold text-gray-800 mt-1">{event.title}</h4>
+                                            <div className="flex items-center text-xs text-gray-500 mt-1">
+                                                <MapPin size={10} className="mr-1" /> {event.location}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
-
-                        <div className="flex justify-between items-center pt-2 border-t border-gray-50">
-                          <div className="flex gap-2">
-                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide bg-gray-100 px-2 py-1 rounded">
-                              {event.category}
-                             </span>
-                             {event.points > 0 && (
-                                <span className="flex items-center text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
-                                  <Zap size={10} className="mr-1 fill-current"/> {event.points} CPD
-                                </span>
-                             )}
-                          </div>
-                          <button onClick={() => openNoteModal(event.id)} className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded border transition-colors ${event.hasNote ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
-                            <PenTool size={10} /> {event.hasNote ? 'Edit Note' : 'Add Note'}
-                          </button>
-                        </div>
-                      </div>
                     </div>
-                  </React.Fragment>
                 );
-              })
-            )}
-          </div>
-        )}
-      </main>
+            };
 
-      {/* BOTTOM NAV BAR */}
-      <div className="bg-white border-t border-gray-200 px-6 py-2 pb-4 flex justify-between items-center text-[10px] text-gray-400 font-medium z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
-        <button onClick={() => setView('home')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'home' ? 'text-blue-600 bg-blue-50' : ''}`}>
-          <Calendar size={20} className="mb-1" /> Schedule
-        </button>
-        <button onClick={() => setView('calendar')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'calendar' ? 'text-blue-600 bg-blue-50' : ''}`}>
-          <CalendarDays size={20} className="mb-1" /> Calendar
-        </button>
-        <div className="relative -top-6">
-           <button onClick={() => setView('notes')} className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-4 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center justify-center border-4 border-white">
-             <PenTool size={24} />
-           </button>
-        </div>
-        <button onClick={() => setView('cpd')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'cpd' ? 'text-blue-600 bg-blue-50' : ''}`}>
-          <Award size={20} className="mb-1" /> CPD Points
-        </button>
-        <button onClick={() => setView('guide')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'guide' ? 'text-blue-600 bg-blue-50' : ''}`}>
-          <Compass size={20} className="mb-1" /> Guide
-        </button>
-      </div>
+            // --- RENDER SPLASH ---
+            if(splash) return (
+                <div className="h-screen w-screen bg-gradient-to-br from-blue-900 to-indigo-900 flex flex-col items-center justify-center text-white p-6">
+                    <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center text-blue-900 text-4xl font-black mb-6 animate-bounce border-4 border-white shadow-xl">50</div>
+                    <h1 className="text-3xl font-bold text-center mb-2">IIEE 50th ANC</h1>
+                    <p className="text-center text-blue-200 text-sm mb-8 max-w-xs">Integrity • Innovation • Empowerment • Excellence</p>
+                    <button onClick={() => { playMarioCoin(); setSplash(false); }} className="bg-white text-blue-900 px-8 py-3 rounded-full font-bold shadow-lg flex items-center gap-2 active:scale-95 transition-transform">
+                        <Play size={20} fill="currentColor" /> ENTER APP
+                    </button>
+                </div>
+            );
 
-      {/* OVERLAYS */}
-      {renderNoteModal()}
+            // --- RENDER APP ---
+            return (
+                <div className="flex flex-col h-full bg-gray-50">
+                    
+                    {/* Header */}
+                    <header className="bg-blue-900 text-white shrink-0 z-20 shadow-md">
+                        <div className="bg-black/20 px-4 py-1 text-[10px] flex justify-between items-center">
+                            <span>⚡ Dev: {DEV_NAME}</span>
+                            <a href={`tel:${DEV_CONTACT}`} className="flex items-center gap-1"><Phone size={10}/> {DEV_CONTACT}</a>
+                        </div>
+                        <div className="p-4 flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-blue-900 font-bold border-2 border-white">50</div>
+                                <div>
+                                    <h1 className="font-bold leading-tight">IIEE Convention</h1>
+                                    <p className="text-[10px] text-blue-200">Nov 24-29, 2025 • SMX</p>
+                                </div>
+                            </div>
+                            <button onClick={() => setMenuOpen(true)}><Menu /></button>
+                        </div>
 
-      {/* TOAST NOTIFICATION */}
-      {notification && (
-        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur text-white text-xs font-bold px-4 py-3 rounded-full shadow-2xl z-50 flex items-center gap-2 animate-fade-in-down border border-white/10">
-          <CheckCircle size={14} className="text-green-400"/>
-          {notification}
-        </div>
-      )}
+                        {/* Simulation Controls */}
+                        {view === 'home' && (
+                            <div className="px-4 pb-3">
+                                <div className="bg-white/10 rounded-lg p-2 flex justify-between items-center text-xs">
+                                    <div className="flex items-center gap-2 font-mono text-yellow-300">
+                                        <Clock size={14} />
+                                        {time.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})} ({time.getDate()}th)
+                                    </div>
+                                    <div className="flex gap-1">
+                                        <button onClick={() => setTime(new Date(time.getTime()-86400000))} className="bg-white/20 px-2 py-1 rounded">-1D</button>
+                                        <button onClick={() => setTime(new Date(time.getTime()-3600000))} className="bg-white/20 px-2 py-1 rounded">-1H</button>
+                                        <button onClick={() => setTime(new Date(time.getTime()+3600000))} className="bg-white/20 px-2 py-1 rounded">+1H</button>
+                                        <button onClick={() => setTime(new Date(time.getTime()+86400000))} className="bg-white/20 px-2 py-1 rounded">+1D</button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
 
-    </div>
-  );
-}
+                        {/* Tabs */}
+                        {view === 'home' && (
+                            <div className="flex px-4 gap-4 overflow-x-auto no-scrollbar text-sm font-medium border-b border-white/10">
+                                {['all','now','soon','fav'].map(t => (
+                                    <button key={t} onClick={() => setTab(t)} 
+                                        className={`pb-3 uppercase tracking-wide whitespace-nowrap border-b-2 transition-colors ${tab === t ? 'border-yellow-400 text-yellow-400' : 'border-transparent text-blue-300'}`}>
+                                        {t === 'fav' ? 'My Agenda' : t}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
+                    </header>
+
+                    {/* Main Content */}
+                    <main className="flex-1 overflow-y-auto p-4 pb-24 space-y-4">
+                        
+                        {/* SEARCH BAR */}
+                        {view === 'home' && (
+                            <div className="relative">
+                                <Search className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                                <input 
+                                    type="text" placeholder="Search events..." 
+                                    value={query} onChange={e => setQuery(e.target.value)}
+                                    className="w-full pl-10 p-2 rounded-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                        )}
+
+                        {/* EVENT LIST */}
+                        {view === 'home' && filteredEvents.map(ev => (
+                            <div key={ev.id} className={`bg-white p-4 rounded-xl shadow-sm border-l-4 ${ev.status === 'now' ? 'border-red-500 ring-1 ring-red-100' : ev.status === 'soon' ? 'border-orange-400' : 'border-blue-500'}`}>
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <span className={`text-sm font-bold ${ev.status === 'now' ? 'text-red-600' : 'text-blue-900'}`}>
+                                            {formatTime(ev.start)} - {formatTime(ev.end)}
+                                        </span>
+                                        {ev.status === 'now' && <span className="ml-2 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded animate-pulse">LIVE</span>}
+                                    </div>
+                                    <button onClick={() => toggleFav(ev.id)}>
+                                        <Star size={20} className={ev.isFav ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
+                                    </button>
+                                </div>
+                                <h3 className="font-bold text-gray-800 leading-tight mb-1">{ev.title}</h3>
+                                <div className="flex items-center text-xs text-gray-500 mb-3">
+                                    <MapPin size={12} className="mr-1"/> {ev.location}
+                                    <span className="mx-2">•</span> {formatDate(ev.day)}
+                                </div>
+                                <div className="flex gap-2 border-t pt-2">
+                                    <button onClick={() => { setNoteId(ev.id); setNoteText(notes[ev.id] || ""); }} 
+                                        className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${ev.hasNote ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
+                                        <PenTool size={12}/> {ev.hasNote ? 'Edit Note' : 'Note'}
+                                    </button>
+                                    {ev.points > 0 && (
+                                        <button onClick={() => {
+                                            setAttended(prev => prev.includes(ev.id) ? prev.filter(i => i !== ev.id) : [...prev, ev.id]);
+                                            showNotify("Attendance Updated");
+                                        }} className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${attended.includes(ev.id) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                            <Zap size={12} className={attended.includes(ev.id) ? "fill-current" : ""}/> {ev.points} CPD
+                                        </button>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+
+                        {/* VENUE GUIDE */}
+                        {view === 'guide' && (
+                            <div className="space-y-4 animate-slide-up">
+                                <h2 className="font-bold text-xl text-blue-900">Venue Guide</h2>
+                                {VENUE_GUIDE.map((g, i) => (
+                                    <div key={i} className="bg-white rounded-xl shadow-sm overflow-hidden">
+                                        <div className={`p-3 font-bold flex items-center gap-2 ${g.color}`}>
+                                            <g.icon size={18}/> {g.category}
+                                        </div>
+                                        <div className="divide-y">
+                                            {g.items.map((item, idx) => (
+                                                <div key={idx} className="p-3">
+                                                    <div className="flex justify-between font-bold text-sm text-gray-800">
+                                                        {item.name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500">{item.loc}</span>
+                                                    </div>
+                                                    <p className="text-xs text-gray-500 mt-1">{item.desc}</p>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {/* CALENDAR VIEW */}
+                        {view === 'calendar' && renderCalendar()}
+
+                        {/* MY NOTES */}
+                        {view === 'notes' && (
+                            <div className="animate-slide-up">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h2 className="font-bold text-xl text-blue-900">My Notes</h2>
+                                    <button onClick={generatePDF} className="bg-blue-600 text-white px-3 py-1.5 rounded text-xs font-bold flex items-center gap-1">
+                                        <Printer size={14}/> Save PDF
+                                    </button>
+                                </div>
+                                <div className="space-y-3">
+                                    {Object.keys(notes).length === 0 && <div className="text-center text-gray-400 py-10">No notes yet.</div>}
+                                    {Object.entries(notes).map(([id, text]) => {
+                                        const ev = RAW_EVENTS.find(e => e.id == id);
+                                        if(!ev) return null;
+                                        return (
+                                            <div key={id} className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl">
+                                                <div className="flex justify-between mb-2">
+                                                    <h3 className="font-bold text-sm text-blue-900">{ev.title}</h3>
+                                                    <button onClick={() => { setNoteId(ev.id); setNoteText(text); }}><PenTool size={14} className="text-gray-400"/></button>
+                                                </div>
+                                                <p className="text-sm font-mono text-gray-700 whitespace-pre-wrap">{text}</p>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* CPD */}
+                        {view === 'cpd' && (
+                            <div className="animate-slide-up text-center">
+                                <div className="bg-gradient-to-br from-blue-800 to-blue-600 text-white p-8 rounded-2xl shadow-lg mb-6">
+                                    <div className="text-6xl font-black mb-2">{cpdTotal}</div>
+                                    <div className="text-blue-200 text-sm">Total CPD Points Earned</div>
+                                </div>
+                                <p className="text-gray-500 text-xs">Check into events to earn points.</p>
+                            </div>
+                        )}
+
+                    </main>
+
+                    {/* Navigation Bar */}
+                    <nav className="bg-white border-t px-6 py-3 fixed bottom-0 w-full flex justify-between items-center text-[10px] font-bold text-gray-400 z-30">
+                        <button onClick={() => setView('home')} className={`flex flex-col items-center gap-1 ${view === 'home' ? 'text-blue-600' : ''}`}>
+                            <Calendar size={22} /> Schedule
+                        </button>
+                        <button onClick={() => setView('calendar')} className={`flex flex-col items-center gap-1 ${view === 'calendar' ? 'text-blue-600' : ''}`}>
+                            <CalendarDays size={22} /> Calendar
+                        </button>
+                        <button onClick={() => setView('notes')} className="relative -top-6 bg-yellow-400 text-blue-900 p-4 rounded-full shadow-xl border-4 border-gray-50">
+                            <PenTool size={24} />
+                        </button>
+                        <button onClick={() => setView('cpd')} className={`flex flex-col items-center gap-1 ${view === 'cpd' ? 'text-blue-600' : ''}`}>
+                            <Award size={22} /> CPD
+                        </button>
+                        <button onClick={() => setMenuOpen(true)} className="flex flex-col items-center gap-1">
+                            <Menu size={22} /> Menu
+                        </button>
+                    </nav>
+
+                    {/* Note Modal */}
+                    {noteId && (
+                        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+                            <div className="bg-white w-full max-w-md rounded-2xl p-4 shadow-2xl animate-slide-up">
+                                <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+                                    <div className="flex items-center gap-2">
+                                        <Keyboard size={20} className="text-blue-600"/>
+                                        <div>
+                                            <h3 className="font-bold text-lg">Edit Note</h3>
+                                            <p className="text-xs text-gray-500">{RAW_EVENTS.find(e => e.id === noteId)?.title}</p>
+                                        </div>
+                                    </div>
+                                    <button onClick={() => setNoteId(null)}><X size={20}/></button>
+                                </div>
+                                <textarea 
+                                    inputMode="text"
+                                    className="w-full h-40 bg-yellow-50 border border-yellow-200 rounded-xl p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none font-sans text-base"
+                                    placeholder="Type your key takeaways here..."
+                                    value={noteText}
+                                    onChange={e => setNoteText(e.target.value)}
+                                    autoFocus
+                                ></textarea>
+                                <button onClick={saveNote} className="w-full bg-blue-900 text-white py-3 rounded-xl font-bold mt-4 flex items-center justify-center gap-2">
+                                    <Save size={18} /> Save Note
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Side Menu */}
+                    {menuOpen && (
+                        <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setMenuOpen(false)}>
+                            <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+                                <div className="flex justify-between items-center mb-8">
+                                    <h2 className="font-bold text-xl text-blue-900">Menu</h2>
+                                    <button onClick={() => setMenuOpen(false)}><X /></button>
+                                </div>
+                                <div className="space-y-4">
+                                    <button onClick={() => { setView('home'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Schedule List</button>
+                                    <button onClick={() => { setView('calendar'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Full Calendar</button>
+                                    <button onClick={() => { setView('guide'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Venue Guide</button>
+                                    <button onClick={() => { setView('notes'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">My Notes</button>
+                                    <button onClick={() => { setView('cpd'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">CPD Tracker</button>
+                                </div>
+                                <div className="mt-8 p-4 bg-blue-50 rounded-xl">
+                                    <p className="text-xs text-blue-500 font-bold uppercase mb-2">Developer</p>
+                                    <p className="font-bold text-blue-900">{DEV_NAME}</p>
+                                    <p className="text-xs text-gray-500">{DEV_CONTACT}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Toast Notification */}
+                    {notify && (
+                        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl text-sm font-bold z-50 animate-fade-in flex items-center gap-2">
+                            <CheckCircle size={16} className="text-green-400"/> {notify}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        const root = createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
