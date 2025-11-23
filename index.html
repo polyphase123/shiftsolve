@@ -37,6 +37,11 @@
         /* Hide scrollbar for clean UI */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* Mobile Safe Area Fixes */
+        body {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
     </style>
 </head>
 <body class="bg-gray-100 text-slate-800 h-screen w-screen overflow-hidden select-none">
@@ -405,7 +410,7 @@
                     </header>
 
                     {/* Main Content */}
-                    <main className="flex-1 overflow-y-auto p-4 pb-24 space-y-4">
+                    <main className="flex-1 overflow-y-auto p-4 pb-40 space-y-4">
                         
                         {/* SEARCH BAR */}
                         {view === 'home' && (
