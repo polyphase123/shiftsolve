@@ -1,0 +1,824 @@
+import React, { useState, useEffect, useMemo } from 'react';
+import { 
+  Search, Clock, MapPin, Star, Calendar, ChevronRight, Menu, X, 
+  CheckCircle, User, Award, Info, QrCode, Share2, Phone, Mail, 
+  LayoutGrid, Download, Zap, PenTool, FileText, Printer, Save, 
+  Compass, Coffee, Beer, Cigarette, BedDouble, CalendarDays, Keyboard
+} from 'lucide-react';
+
+// --- REAL DATA & CONFIG ---
+
+const THEME = "Celebrating 50 Years of Integrity, Innovation, Empowerment, and Excellence";
+const DEV_NAME = "Engr. Franz Xyrlo Tobias, PEE";
+const DEV_CONTACT = "0936 923 8834";
+
+const SPONSORS = [
+  { id: 1, name: "Fuji-Haya Electric", tier: "Platinum", logo: "⚡" },
+  { id: 2, name: "Vertiv", tier: "Gold", logo: "🔋" },
+  { id: 3, name: "Megger", tier: "Gold", logo: "🔌" },
+  { id: 4, name: "Kingsine", tier: "Silver", logo: "📟" },
+];
+
+const EXHIBITORS = [
+  { id: 101, name: "Kingsine Electric Automation", booth: "147", category: "Testing Equipment", desc: "Protection Relay Testing & Calibration" },
+  { id: 102, name: "Safegrid / G&W Electric", booth: "285-287", category: "Power Distribution", desc: "Innovations in resilient power grids" },
+  { id: 103, name: "Fuji-Haya Electric", booth: "Main Hall", category: "Switchgear", desc: "Medium and Low-Voltage Switchgear designs" },
+  { id: 104, name: "Vertiv", booth: "A-12", category: "Data Centers", desc: "Critical digital infrastructure and continuity solutions" },
+  { id: 105, name: "Megger", booth: "B-05", category: "Testing", desc: "Cable fault locating and testing" },
+];
+
+const VENUE_GUIDE = [
+  {
+    category: "Dining",
+    icon: Coffee,
+    color: "text-orange-600 bg-orange-50",
+    items: [
+      { name: "Vikings Luxury Buffet", loc: "SM Mall of Asia (By the Bay)", desc: "Famous for massive international buffet selection." },
+      { name: "Texas Roadhouse", loc: "S Maison (Adjacent to SMX)", desc: "Legendary steaks and ribs. Great for team dinners." },
+      { name: "Brasserie on 3", loc: "Conrad Manila (Level 3)", desc: "Upscale dining with direct access from SMX." },
+      { name: "The Coffee Bean & Tea Leaf", loc: "SMX Ground Level", desc: "Quick coffee breaks between sessions." }
+    ]
+  },
+  {
+    category: "Bars & Social",
+    icon: Beer,
+    color: "text-purple-600 bg-purple-50",
+    items: [
+      { name: "Hard Rock Cafe", loc: "S Maison (Level 2)", desc: "Live music, cocktails, and classic American fare." },
+      { name: "C Lounge", loc: "Conrad Manila", desc: "Sophisticated rooftop bar with Manila Bay sunset views." },
+      { name: "Microtel Roof Deck", loc: "Microtel by Wyndham", desc: "Casual drinks with a view of the MOA Eye." }
+    ]
+  },
+  {
+    category: "Hotels",
+    icon: BedDouble,
+    color: "text-blue-600 bg-blue-50",
+    items: [
+      { name: "Conrad Manila", loc: "Direct Access", desc: "Luxury. Connected to SMX via bridges." },
+      { name: "Microtel by Wyndham", loc: "Coral Way (Walking Distance)", desc: "Convenient & business-friendly." },
+      { name: "Hotel 101 Manila", loc: "EDSA Ext (Short Ride)", desc: "Popular for large delegations." },
+      { name: "Lanson Place", loc: "Mall of Asia Complex", desc: "Serviced apartments for long stays." }
+    ]
+  },
+  {
+    category: "Smoking Areas",
+    icon: Cigarette,
+    color: "text-gray-600 bg-gray-100",
+    items: [
+      { name: "Designated Outdoor Area", loc: "Back of SMX (Parking Side)", desc: "Strictly no smoking inside. Follow green lines to the back." },
+      { name: "Mall of Asia Designated Zones", loc: "Specific outdoor corners", desc: "Look for yellow 'Designated Smoking Area' signs." }
+    ]
+  }
+];
+
+const RAW_EVENTS = [
+  // Nov 24 (Virtual)
+  { id: 1, day: "2025-11-24", start: "08:00", end: "12:00", title: "Philippine Electric Code (PEC) Updates", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
+  { id: 2, day: "2025-11-24", start: "13:00", end: "17:00", title: "Electrical Standards Forum", location: "Zoom / Virtual", category: "Standards", type: "Virtual", points: 4 },
+  
+  // Nov 25 (Virtual)
+  { id: 3, day: "2025-11-25", start: "08:00", end: "12:00", title: "Energy Efficiency & Conservation", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
+  { id: 4, day: "2025-11-25", start: "13:00", end: "17:00", title: "Careers in Maritime Industry", location: "Zoom / Virtual", category: "Career", type: "Virtual", points: 4 },
+
+  // Nov 26 (Physical Starts)
+  { id: 5, day: "2025-11-26", start: "08:00", end: "17:00", title: "EE Research Contest & Colloquium", location: "Function Room 3", category: "Research", type: "Physical", points: 7 },
+  { id: 6, day: "2025-11-26", start: "06:00", end: "14:00", title: "Technical Plant Tour", location: "Pililla Wind Farm", category: "Tour", type: "Physical", points: 0 },
+  { id: 7, day: "2025-11-26", start: "10:00", end: "18:00", title: "3E XPO Opening & Viewing", location: "SMX Halls 1-4", category: "Expo", type: "Physical", points: 0 },
+
+  // Nov 27
+  { id: 8, day: "2025-11-27", start: "08:30", end: "12:00", title: "Grand Opening Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+  { id: 9, day: "2025-11-27", start: "13:00", end: "17:00", title: "Plenary Technical Sessions", location: "Function Rooms 1-4", category: "Technical", type: "Physical", points: 7 },
+  { id: 10, day: "2025-11-27", start: "18:00", end: "23:00", title: "Practitioners' Night", location: "Ballroom", category: "Social", type: "Physical", points: 0 },
+
+  // Nov 28
+  { id: 11, day: "2025-11-28", start: "08:00", end: "17:00", title: "Simultaneous Technical Sessions", location: "Meeting Rooms 4-8", category: "Technical", type: "Physical", points: 7 },
+  { id: 12, day: "2025-11-28", start: "13:00", end: "16:00", title: "General Membership Meeting", location: "Function Rooms 1-2", category: "Business", type: "Physical", points: 0 },
+
+  // Nov 29
+  { id: 13, day: "2025-11-29", start: "08:00", end: "12:00", title: "RME Technical Sessions", location: "Function Room 3", category: "Technical", type: "Physical", points: 5 },
+  { id: 14, day: "2025-11-29", start: "13:00", end: "15:00", title: "Closing Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+];
+
+// --- HELPER FUNCTIONS ---
+
+const getEventStatus = (event, currentTime) => {
+  const eventStart = new Date(`${event.day}T${event.start}:00`);
+  const eventEnd = new Date(`${event.day}T${event.end}:00`);
+  if (event.end === "24:00") eventEnd.setHours(23, 59, 59);
+
+  if (currentTime >= eventStart && currentTime <= eventEnd) return 'now';
+  if (currentTime < eventStart) {
+    const diffMs = eventStart - currentTime;
+    const diffHours = diffMs / (1000 * 60 * 60);
+    if (diffHours <= 2 && diffHours > 0) return 'soon';
+    return 'future';
+  }
+  return 'past';
+};
+
+const formatTime = (timeStr) => {
+  const [hour, minute] = timeStr.split(':');
+  const h = parseInt(hour, 10);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${minute} ${ampm}`;
+};
+
+const formatDate = (dateStr) => {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+};
+
+// --- MAIN APP COMPONENT ---
+
+export default function IIEEConventionApp() {
+  const [simulatedTime, setSimulatedTime] = useState(new Date("2025-11-27T09:00:00"));
+  const [view, setView] = useState('home'); // home, calendar, exhibitors, cpd, profile, contact, notes, guide
+  const [activeTab, setActiveTab] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [favorites, setFavorites] = useState([]);
+  const [attendedEvents, setAttendedEvents] = useState([]);
+  
+  // NOTE LOGIC
+  const [notes, setNotes] = useState({}); 
+  const [activeNoteId, setActiveNoteId] = useState(null); 
+  const [tempNoteContent, setTempNoteContent] = useState("");
+
+  // CALENDAR LOGIC
+  const [selectedCalendarDate, setSelectedCalendarDate] = useState("2025-11-27");
+
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [notification, setNotification] = useState(null);
+
+  // --- PERSISTENCE ---
+  useEffect(() => {
+    const savedFavs = localStorage.getItem('iiee_favorites');
+    if (savedFavs) setFavorites(JSON.parse(savedFavs));
+    
+    const savedAttended = localStorage.getItem('iiee_attended');
+    if (savedAttended) setAttendedEvents(JSON.parse(savedAttended));
+
+    const savedNotes = localStorage.getItem('iiee_notes');
+    if (savedNotes) setNotes(JSON.parse(savedNotes));
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem('iiee_favorites', JSON.stringify(favorites));
+    localStorage.setItem('iiee_attended', JSON.stringify(attendedEvents));
+    localStorage.setItem('iiee_notes', JSON.stringify(notes));
+  }, [favorites, attendedEvents, notes]);
+
+  // --- ACTIONS ---
+  const toggleFavorite = (id) => {
+    if (favorites.includes(id)) {
+      setFavorites(favorites.filter(fid => fid !== id));
+      showNotification("Removed from Agenda");
+    } else {
+      setFavorites([...favorites, id]);
+      showNotification("Added to Agenda");
+    }
+  };
+
+  const markAttended = (id) => {
+    if (attendedEvents.includes(id)) {
+      setAttendedEvents(attendedEvents.filter(aid => aid !== id));
+    } else {
+      setAttendedEvents([...attendedEvents, id]);
+      showNotification("Marked as Attended (+CPD Points)");
+    }
+  };
+
+  const openNoteModal = (eventId) => {
+    setTempNoteContent(notes[eventId] || "");
+    setActiveNoteId(eventId);
+  };
+
+  const saveNoteAndClose = () => {
+    if (activeNoteId) {
+      setNotes(prev => ({ ...prev, [activeNoteId]: tempNoteContent }));
+      setActiveNoteId(null);
+      showNotification("Note Saved!");
+    }
+  };
+
+  const showNotification = (msg) => {
+    setNotification(msg);
+    setTimeout(() => setNotification(null), 2500);
+  };
+
+  // --- PDF GENERATION ---
+  const generatePDF = () => {
+    const notesContent = RAW_EVENTS
+      .filter(e => notes[e.id] && notes[e.id].trim().length > 0)
+      .map(e => `
+        <div style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 15px;">
+          <h3 style="margin: 0; color: #1e3a8a;">${e.title}</h3>
+          <p style="margin: 5px 0; font-size: 12px; color: #666;">${formatDate(e.day)} | ${formatTime(e.start)} - ${formatTime(e.end)} | ${e.location}</p>
+          <div style="margin-top: 10px; font-family: monospace; white-space: pre-wrap; background: #f9fafb; padding: 10px; border-radius: 5px;">${notes[e.id]}</div>
+        </div>
+      `).join('');
+
+    if (!notesContent) {
+      showNotification("No notes to export!");
+      return;
+    }
+
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+      <html>
+        <head>
+          <title>My IIEE Convention Notes</title>
+          <style>
+            body { font-family: sans-serif; padding: 40px; color: #333; }
+            h1 { color: #1e3a8a; border-bottom: 2px solid #fbbf24; padding-bottom: 10px; }
+            .header { margin-bottom: 30px; }
+            .footer { margin-top: 50px; font-size: 10px; color: #999; text-align: center; border-top: 1px solid #eee; padding-top: 10px; }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <h1>My Convention Notes</h1>
+            <p><strong>IIEE 50th Annual National Convention & 3EXPO 2025</strong></p>
+            <p>Generated on: ${new Date().toLocaleString()}</p>
+          </div>
+          ${notesContent}
+          <div class="footer">
+            Generated by IIEE Convention App | Developed by ${DEV_NAME}
+          </div>
+          <script>
+            window.onload = function() { window.print(); }
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
+  // --- COMPUTED DATA ---
+  const processedEvents = useMemo(() => {
+    return RAW_EVENTS.map(event => ({
+      ...event,
+      status: getEventStatus(event, simulatedTime),
+      isFavorite: favorites.includes(event.id),
+      isAttended: attendedEvents.includes(event.id),
+      hasNote: notes[event.id] && notes[event.id].trim().length > 0
+    })).sort((a, b) => new Date(`${a.day}T${a.start}`) - new Date(`${b.day}T${b.start}`));
+  }, [simulatedTime, favorites, attendedEvents, notes]);
+
+  const filteredEvents = useMemo(() => {
+    let data = processedEvents;
+    if (searchQuery) {
+      const lowerQ = searchQuery.toLowerCase();
+      data = data.filter(e => e.title.toLowerCase().includes(lowerQ) || e.location.toLowerCase().includes(lowerQ));
+    }
+    
+    // Calendar View Filter
+    if (view === 'calendar') {
+      return data.filter(e => e.day === selectedCalendarDate);
+    }
+
+    switch (activeTab) {
+      case 'now': return data.filter(e => e.status === 'now');
+      case 'soon': return data.filter(e => e.status === 'soon');
+      case 'favorites': return data.filter(e => e.isFavorite);
+      default: return data;
+    }
+  }, [processedEvents, searchQuery, activeTab, view, selectedCalendarDate]);
+
+  const totalCPD = attendedEvents.reduce((sum, id) => {
+    const ev = RAW_EVENTS.find(e => e.id === id);
+    return sum + (ev ? ev.points : 0);
+  }, 0);
+
+  // --- RENDER SECTIONS ---
+
+  // 1. VENUE GUIDE VIEW
+  const renderGuide = () => (
+    <div className="p-4 pb-24 animate-fade-in-up">
+       <h2 className="text-xl font-bold text-gray-800 flex items-center mb-4">
+         <Compass className="mr-2 text-blue-600" /> Venue & Area Guide
+       </h2>
+       
+       <div className="space-y-6">
+         {VENUE_GUIDE.map((section, idx) => (
+           <div key={idx} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+             <div className={`p-3 font-bold flex items-center gap-2 ${section.color}`}>
+               <section.icon size={18} /> {section.category}
+             </div>
+             <div className="divide-y divide-gray-100">
+               {section.items.map((item, i) => (
+                 <div key={i} className="p-4 hover:bg-gray-50 transition-colors">
+                   <div className="flex justify-between items-start">
+                     <h4 className="font-bold text-gray-800">{item.name}</h4>
+                     <span className="text-[10px] uppercase font-bold text-gray-400 bg-gray-100 px-2 py-0.5 rounded">{item.loc}</span>
+                   </div>
+                   <p className="text-sm text-gray-600 mt-1">{item.desc}</p>
+                 </div>
+               ))}
+             </div>
+           </div>
+         ))}
+       </div>
+    </div>
+  );
+
+  // 2. EXHIBITORS VIEW
+  const renderExhibitors = () => (
+    <div className="p-4 space-y-4 pb-24 animate-fade-in-up">
+      <h2 className="text-xl font-bold text-gray-800 flex items-center">
+        <LayoutGrid className="mr-2 text-blue-600" /> 3E XPO Exhibitors
+      </h2>
+      <div className="grid gap-4">
+        {EXHIBITORS.map(ex => (
+          <div key={ex.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex justify-between items-center">
+            <div>
+              <h3 className="font-bold text-lg text-gray-900">{ex.name}</h3>
+              <p className="text-xs text-gray-500">{ex.desc}</p>
+              <span className="inline-block mt-2 px-2 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded">
+                {ex.category}
+              </span>
+            </div>
+            <div className="text-right">
+              <span className="block text-xs text-gray-400 uppercase">Booth</span>
+              <span className="text-xl font-bold text-blue-600">{ex.booth}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  // 3. CALENDAR VIEW
+  const renderCalendar = () => {
+    // Generate dates for Nov 2025
+    const daysInMonth = 30;
+    const startDayOffset = 6; // Nov 1 2025 is Saturday (0=Sun, 6=Sat)
+    
+    // Create grid array including empty slots for offset
+    const grid = [];
+    for (let i = 0; i < startDayOffset; i++) grid.push(null);
+    for (let i = 1; i <= daysInMonth; i++) grid.push(i);
+
+    return (
+      <div className="p-4 pb-24 animate-fade-in-up">
+        <h2 className="text-xl font-bold text-gray-800 flex items-center mb-4">
+          <CalendarDays className="mr-2 text-blue-600" /> Event Calendar
+        </h2>
+
+        {/* Calendar Grid */}
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6">
+          <div className="flex justify-between items-center mb-4">
+             <h3 className="font-bold text-lg text-gray-800">November 2025</h3>
+             <div className="flex gap-1">
+                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span className="text-xs text-gray-500">Event Day</span>
+             </div>
+          </div>
+          
+          <div className="grid grid-cols-7 gap-1 text-center mb-2">
+            {['S','M','T','W','T','F','S'].map((d,i) => (
+              <div key={i} className="text-xs font-bold text-gray-400 py-1">{d}</div>
+            ))}
+          </div>
+          
+          <div className="grid grid-cols-7 gap-1">
+             {grid.map((day, idx) => {
+               if (!day) return <div key={idx} className="aspect-square"></div>;
+               
+               const dateStr = `2025-11-${String(day).padStart(2, '0')}`;
+               const hasEvent = RAW_EVENTS.some(e => e.day === dateStr);
+               const isSelected = selectedCalendarDate === dateStr;
+
+               return (
+                 <button 
+                   key={idx}
+                   disabled={!hasEvent}
+                   onClick={() => setSelectedCalendarDate(dateStr)}
+                   className={`aspect-square rounded-lg flex flex-col items-center justify-center relative transition-all ${
+                     isSelected 
+                       ? 'bg-blue-600 text-white shadow-md scale-105 z-10' 
+                       : hasEvent 
+                         ? 'bg-blue-50 text-blue-900 hover:bg-blue-100 font-bold' 
+                         : 'text-gray-300'
+                   }`}
+                 >
+                   <span className="text-sm">{day}</span>
+                   {hasEvent && !isSelected && (
+                     <span className="w-1 h-1 bg-blue-400 rounded-full mt-1"></span>
+                   )}
+                 </button>
+               );
+             })}
+          </div>
+        </div>
+
+        {/* Selected Day Events */}
+        <div>
+           <h3 className="font-bold text-gray-600 text-sm uppercase mb-3 flex items-center">
+             Events for {new Date(selectedCalendarDate).toLocaleDateString('en-US', {weekday:'long', month:'long', day:'numeric'})}
+           </h3>
+           
+           {filteredEvents.length === 0 ? (
+             <div className="text-center py-8 text-gray-400 bg-white rounded-xl border border-dashed">
+               No events scheduled for this day.
+             </div>
+           ) : (
+             <div className="space-y-3">
+               {filteredEvents.map(event => (
+                 <div key={event.id} className="bg-white p-4 rounded-xl shadow-sm border border-l-4 border-l-blue-500">
+                    <div className="flex justify-between">
+                       <span className="text-blue-900 font-bold text-xs">{formatTime(event.start)} - {formatTime(event.end)}</span>
+                       <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded text-gray-500 font-bold uppercase">{event.category}</span>
+                    </div>
+                    <h4 className="font-bold text-gray-800 mt-1">{event.title}</h4>
+                    <div className="flex items-center text-xs text-gray-500 mt-1">
+                      <MapPin size={10} className="mr-1" /> {event.location}
+                    </div>
+                 </div>
+               ))}
+             </div>
+           )}
+        </div>
+      </div>
+    );
+  };
+
+  // 4. MY NOTES VIEW
+  const renderNotes = () => {
+    const eventsWithNotes = processedEvents.filter(e => e.hasNote);
+
+    return (
+      <div className="p-4 pb-24 animate-fade-in-up">
+         <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center">
+              <FileText className="mr-2 text-blue-600" /> My Notes
+            </h2>
+            <button 
+              onClick={generatePDF}
+              className="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 hover:bg-blue-700 shadow-md transition-transform active:scale-95"
+            >
+              <Printer size={14} /> Save PDF
+            </button>
+         </div>
+
+         {eventsWithNotes.length === 0 ? (
+           <div className="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+             <PenTool className="mx-auto text-gray-300 mb-2" size={32} />
+             <p className="text-gray-500 font-medium">No notes yet.</p>
+             <p className="text-xs text-gray-400 mt-1">Tap the pen icon on any event to start writing.</p>
+           </div>
+         ) : (
+           <div className="space-y-4">
+             {eventsWithNotes.map(event => (
+               <div key={event.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                 <div className="flex justify-between items-start mb-2">
+                   <h3 className="font-bold text-gray-800 text-sm">{event.title}</h3>
+                   <button onClick={() => openNoteModal(event.id)} className="text-blue-500 p-1"><PenTool size={14} /></button>
+                 </div>
+                 <div className="bg-yellow-50 p-3 rounded-lg border border-yellow-100 text-sm font-handwriting text-gray-700 whitespace-pre-wrap">
+                   {notes[event.id]}
+                 </div>
+                 <p className="text-[10px] text-gray-400 mt-2 text-right">{formatDate(event.day)}</p>
+               </div>
+             ))}
+           </div>
+         )}
+      </div>
+    );
+  };
+
+  // 5. PROFILE / QR VIEW
+  const renderProfile = () => (
+    <div className="p-4 flex flex-col items-center pb-24 animate-fade-in-up">
+      <div className="bg-white p-6 rounded-2xl shadow-xl w-full max-w-sm text-center border border-gray-100 mt-4 relative overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500"></div>
+        <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4 overflow-hidden border-4 border-white shadow-md flex items-center justify-center">
+           <User size={48} className="text-gray-400"/>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Engr. Juan Dela Cruz</h2>
+        <p className="text-blue-600 font-medium mb-6">PEE License #123456</p>
+        <div className="bg-gray-50 p-6 rounded-xl border-2 border-dashed border-gray-300 mb-6">
+          <QrCode size={120} className="mx-auto text-gray-800" />
+          <p className="text-xs text-gray-400 mt-2">Scan for Registration / Attendance</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  // 6. CPD TRACKER
+  const renderCPD = () => (
+    <div className="p-4 space-y-6 pb-24 animate-fade-in-up">
+      <div className="bg-gradient-to-br from-blue-900 to-indigo-800 rounded-2xl p-6 text-white text-center shadow-lg">
+        <div className="text-6xl font-black mb-2 flex items-center justify-center">
+          {totalCPD} <span className="text-2xl ml-2 opacity-50 font-normal">pts</span>
+        </div>
+        <div className="w-full bg-blue-950/50 rounded-full h-3 mb-2">
+          <div className="bg-yellow-400 h-3 rounded-full" style={{ width: `${Math.min((totalCPD / 40) * 100, 100)}%` }}></div>
+        </div>
+        <p className="text-xs text-blue-300">Target: 40 points</p>
+      </div>
+
+      <div>
+        <h3 className="font-bold text-gray-700 mb-4 flex items-center"><CheckCircle size={18} className="mr-2" /> Mark Attendance</h3>
+        <div className="space-y-3">
+          {RAW_EVENTS.filter(e => e.points > 0).map(event => (
+            <div key={event.id} onClick={() => markAttended(event.id)} className={`p-4 rounded-xl border flex justify-between items-center cursor-pointer ${attendedEvents.includes(event.id) ? 'bg-green-50 border-green-200' : 'bg-white border-gray-200'}`}>
+              <div>
+                <div className="font-bold text-gray-800">{event.title}</div>
+                <div className="text-xs text-gray-500">{formatDate(event.day)} • {event.points} pts</div>
+              </div>
+              {attendedEvents.includes(event.id) && <CheckCircle className="text-green-500" size={20} />}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  // --- NOTE TAKING MODAL ---
+  const renderNoteModal = () => {
+    if (!activeNoteId) return null;
+    const event = RAW_EVENTS.find(e => e.id === activeNoteId);
+    return (
+      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center animate-fade-in">
+        <div className="bg-white w-full sm:w-96 rounded-t-2xl sm:rounded-2xl p-6 h-[80vh] flex flex-col shadow-2xl animate-slide-in-up">
+          <div className="flex justify-between items-center mb-4 pb-2 border-b border-gray-100">
+            <div className="flex items-center gap-2">
+              <Keyboard size={20} className="text-blue-600"/>
+              <div>
+                <h3 className="font-bold text-gray-800 text-lg">Type Note</h3>
+                <p className="text-xs text-gray-500 truncate max-w-[200px]">{event.title}</p>
+              </div>
+            </div>
+            <button onClick={() => setActiveNoteId(null)} className="p-2 bg-gray-100 rounded-full"><X size={18} /></button>
+          </div>
+          <div className="flex-1 relative">
+            <textarea 
+              inputMode="text"
+              className="w-full h-full bg-yellow-50 p-4 rounded-xl border border-yellow-100 resize-none focus:outline-none focus:ring-2 focus:ring-yellow-400 placeholder-gray-400 text-gray-700 leading-relaxed font-sans text-base"
+              placeholder="Use your keyboard to type notes here..."
+              value={tempNoteContent}
+              onChange={(e) => setTempNoteContent(e.target.value)}
+              autoFocus
+            />
+          </div>
+          <button onClick={saveNoteAndClose} className="mt-4 w-full bg-blue-900 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-blue-800 transition-colors">
+            <Save size={18} /> Save & Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  // --- SCAFFOLDING ---
+
+  return (
+    <div className="flex flex-col h-screen bg-gray-50 text-slate-800 font-sans overflow-hidden relative">
+      
+      {/* HEADER */}
+      <header className="bg-gradient-to-br from-blue-950 via-blue-900 to-indigo-900 text-white shadow-xl z-20 shrink-0 relative overflow-hidden">
+        
+        {/* DEVELOPER BANNER */}
+        <div className="bg-black/30 w-full px-4 py-1 flex justify-between items-center text-[10px] sm:text-xs font-medium border-b border-white/10 backdrop-blur-sm">
+          <div className="flex items-center gap-2">
+             <span className="text-yellow-400">⚡ Developed by:</span>
+             <span className="font-bold tracking-wide">{DEV_NAME}</span>
+          </div>
+          <a href={`tel:${DEV_CONTACT}`} className="flex items-center gap-1 hover:text-yellow-300">
+             <Phone size={10} /> {DEV_CONTACT}
+          </a>
+        </div>
+        
+        <div className="p-4 flex justify-between items-start relative z-10">
+          <div className="flex items-center space-x-3">
+             <div className="w-11 h-11 bg-gradient-to-br from-yellow-300 to-yellow-500 rounded-full flex items-center justify-center text-blue-950 font-black text-xl shadow-lg border-2 border-white/20">
+               50
+             </div>
+             <div>
+               <h1 className="text-lg font-bold leading-tight">IIEE National Convention</h1>
+               <div className="text-[10px] text-yellow-200 leading-tight max-w-[200px] mt-1 font-medium opacity-90">
+                 {THEME.substring(0, 45)}...
+               </div>
+             </div>
+          </div>
+          <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="p-2 hover:bg-white/10 rounded-full transition-colors">
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* TIME TRAVEL (IMPROVED) */}
+        {view === 'home' && (
+          <div className="px-4 pb-2">
+            <div className="bg-black/20 backdrop-blur-md rounded-lg p-2 flex items-center justify-between text-xs border border-white/10">
+               <div className="flex items-center space-x-2">
+                 <Clock size={14} className="text-yellow-400" />
+                 <span className="text-blue-50 font-mono tracking-wide">
+                   {simulatedTime.toLocaleDateString('en-US', {month:'short', day:'numeric'})} • {simulatedTime.toLocaleTimeString('en-US', {hour: '2-digit', minute:'2-digit'})}
+                 </span>
+               </div>
+               <div className="flex gap-1">
+                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() - 24*60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">-1D</button>
+                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() - 60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">-1H</button>
+                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() + 60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">+1H</button>
+                  <button onClick={() => setSimulatedTime(new Date(simulatedTime.getTime() + 24*60*60*1000))} className="px-2 py-0.5 bg-white/10 hover:bg-white/20 rounded text-white border border-white/10">+1D</button>
+               </div>
+            </div>
+          </div>
+        )}
+
+        {/* SEARCH (Only on Home/Exhibitors) */}
+        {(view === 'home' || view === 'exhibitors') && (
+          <div className="px-4 pb-4 mt-2">
+            <div className="relative group">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-300 group-focus-within:text-yellow-400 transition-colors" size={18} />
+              <input 
+                type="text" 
+                placeholder={view === 'exhibitors' ? "Search exhibitors..." : "Search sessions, topics..."}
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 bg-blue-900/50 backdrop-blur-sm border border-blue-700/50 rounded-xl text-white placeholder-blue-300/70 focus:outline-none focus:ring-2 focus:ring-yellow-400/50 text-sm transition-all"
+              />
+            </div>
+          </div>
+        )}
+
+        {/* TABS (Only on Home) */}
+        {view === 'home' && (
+          <div className="flex px-4 space-x-1 overflow-x-auto no-scrollbar pb-0 mt-1">
+            {['all', 'now', 'soon', 'favorites'].map(tab => (
+              <button 
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`pb-3 px-3 text-xs font-bold uppercase tracking-wide border-b-[3px] transition-all whitespace-nowrap ${
+                  activeTab === tab 
+                  ? 'border-yellow-400 text-yellow-400' 
+                  : 'border-transparent text-blue-300 hover:text-white'
+                }`}
+              >
+                {tab === 'favorites' ? 'My Agenda' : tab}
+              </button>
+            ))}
+          </div>
+        )}
+      </header>
+
+      {/* MENU OVERLAY */}
+      {isMenuOpen && (
+        <div className="absolute inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={() => setIsMenuOpen(false)}>
+          <div className="absolute right-0 top-0 bottom-0 w-72 bg-white shadow-2xl flex flex-col transform transition-transform duration-300 animate-slide-in-right" onClick={e => e.stopPropagation()}>
+             <div className="p-6 bg-blue-50 border-b border-blue-100 flex justify-between items-center">
+               <h2 className="text-xl font-bold text-blue-900">Menu</h2>
+               <button onClick={() => setIsMenuOpen(false)} className="p-1 bg-white rounded-full shadow-sm"><X className="text-gray-500" size={20}/></button>
+             </div>
+             <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
+               {[
+                 { id: 'home', icon: Calendar, label: "Schedule List" },
+                 { id: 'calendar', icon: CalendarDays, label: "Full Calendar" },
+                 { id: 'guide', icon: Compass, label: "Venue Guide" },
+                 { id: 'notes', icon: FileText, label: "My Notes & PDF" },
+                 { id: 'exhibitors', icon: LayoutGrid, label: "Exhibitors & Map" },
+                 { id: 'cpd', icon: Award, label: "CPD Tracker" },
+                 { id: 'profile', icon: User, label: "My Badge" },
+               ].map(item => (
+                 <button 
+                    key={item.id}
+                    onClick={() => { setView(item.id); setIsMenuOpen(false); }}
+                    className={`w-full flex items-center space-x-3 p-3 rounded-xl font-medium transition-colors ${
+                      view === item.id ? 'bg-blue-100 text-blue-800' : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                 >
+                   <item.icon size={20} />
+                   <span>{item.label}</span>
+                 </button>
+               ))}
+             </nav>
+             <div className="p-6 bg-gray-50 border-t border-gray-200">
+               <p className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-3">App Developed By</p>
+               <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-blue-900 rounded-lg flex items-center justify-center text-white font-bold shadow-md">FT</div>
+                  <div>
+                    <p className="text-sm font-bold text-gray-800">Engr. Franz Tobias</p>
+                    <p className="text-xs text-blue-600 font-bold">PEE</p>
+                  </div>
+               </div>
+             </div>
+          </div>
+        </div>
+      )}
+
+      {/* MAIN CONTENT AREA */}
+      <main className="flex-1 overflow-y-auto bg-gray-100 scroll-smooth">
+        
+        {view === 'exhibitors' && renderExhibitors()}
+        {view === 'cpd' && renderCPD()}
+        {view === 'profile' && renderProfile()}
+        {view === 'notes' && renderNotes()}
+        {view === 'guide' && renderGuide()}
+        {view === 'calendar' && renderCalendar()}
+
+        {/* SCHEDULE LIST (HOME VIEW) */}
+        {view === 'home' && (
+          <div className="p-4 space-y-3 pb-24 animate-fade-in-up">
+            {filteredEvents.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-400">
+                <Calendar size={48} className="mb-4 opacity-30" />
+                <p>No events found.</p>
+              </div>
+            ) : (
+              filteredEvents.map((event, index) => {
+                const showDateHeader = index === 0 || event.day !== filteredEvents[index - 1].day;
+                return (
+                  <React.Fragment key={event.id}>
+                    {showDateHeader && activeTab === 'all' && (
+                      <div className="sticky top-0 z-10 bg-gray-100/95 backdrop-blur py-2 mt-2">
+                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider flex items-center px-1">
+                          <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
+                          {formatDate(event.day)}
+                        </h3>
+                      </div>
+                    )}
+                    
+                    <div className={`relative bg-white rounded-xl shadow-sm border transition-all duration-200 active:scale-[0.99] ${
+                      event.status === 'now' ? 'border-l-4 border-l-red-500 shadow-md' : 
+                      event.status === 'soon' ? 'border-l-4 border-l-orange-400' : 
+                      'border-l-4 border-l-blue-500'
+                    }`}>
+                      <div className="p-4">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <span className={`text-sm font-bold ${event.status === 'now' ? 'text-red-600' : 'text-blue-900'}`}>
+                              {formatTime(event.start)} - {formatTime(event.end)}
+                            </span>
+                            {event.status === 'now' && <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600 animate-pulse">LIVE</span>}
+                            {event.type === 'Virtual' && <span className="ml-2 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-purple-100 text-purple-600">VIRTUAL</span>}
+                          </div>
+                          <button onClick={() => toggleFavorite(event.id)}>
+                            <Star size={18} className={event.isFavorite ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
+                          </button>
+                        </div>
+                        
+                        <h3 className="text-base font-bold text-gray-800 leading-snug mb-2">{event.title}</h3>
+                        
+                        <div className="flex items-center text-xs text-gray-500 mb-3">
+                          <MapPin size={12} className="mr-1" /> {event.location}
+                        </div>
+
+                        <div className="flex justify-between items-center pt-2 border-t border-gray-50">
+                          <div className="flex gap-2">
+                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide bg-gray-100 px-2 py-1 rounded">
+                              {event.category}
+                             </span>
+                             {event.points > 0 && (
+                                <span className="flex items-center text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
+                                  <Zap size={10} className="mr-1 fill-current"/> {event.points} CPD
+                                </span>
+                             )}
+                          </div>
+                          <button onClick={() => openNoteModal(event.id)} className={`flex items-center gap-1 text-[10px] font-bold px-2 py-1 rounded border transition-colors ${event.hasNote ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-white text-gray-500 border-gray-200 hover:bg-gray-50'}`}>
+                            <PenTool size={10} /> {event.hasNote ? 'Edit Note' : 'Add Note'}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </React.Fragment>
+                );
+              })
+            )}
+          </div>
+        )}
+      </main>
+
+      {/* BOTTOM NAV BAR */}
+      <div className="bg-white border-t border-gray-200 px-6 py-2 pb-4 flex justify-between items-center text-[10px] text-gray-400 font-medium z-30 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+        <button onClick={() => setView('home')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'home' ? 'text-blue-600 bg-blue-50' : ''}`}>
+          <Calendar size={20} className="mb-1" /> Schedule
+        </button>
+        <button onClick={() => setView('calendar')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'calendar' ? 'text-blue-600 bg-blue-50' : ''}`}>
+          <CalendarDays size={20} className="mb-1" /> Calendar
+        </button>
+        <div className="relative -top-6">
+           <button onClick={() => setView('notes')} className="bg-gradient-to-br from-yellow-400 to-orange-500 text-white p-4 rounded-full shadow-xl hover:scale-105 transition-transform flex items-center justify-center border-4 border-white">
+             <PenTool size={24} />
+           </button>
+        </div>
+        <button onClick={() => setView('cpd')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'cpd' ? 'text-blue-600 bg-blue-50' : ''}`}>
+          <Award size={20} className="mb-1" /> CPD Points
+        </button>
+        <button onClick={() => setView('guide')} className={`flex flex-col items-center p-2 rounded-lg transition-colors ${view === 'guide' ? 'text-blue-600 bg-blue-50' : ''}`}>
+          <Compass size={20} className="mb-1" /> Guide
+        </button>
+      </div>
+
+      {/* OVERLAYS */}
+      {renderNoteModal()}
+
+      {/* TOAST NOTIFICATION */}
+      {notification && (
+        <div className="fixed top-24 left-1/2 transform -translate-x-1/2 bg-gray-900/90 backdrop-blur text-white text-xs font-bold px-4 py-3 rounded-full shadow-2xl z-50 flex items-center gap-2 animate-fade-in-down border border-white/10">
+          <CheckCircle size={14} className="text-green-400"/>
+          {notification}
+        </div>
+      )}
+
+    </div>
+  );
+}
