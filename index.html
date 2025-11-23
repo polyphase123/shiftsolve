@@ -53,7 +53,7 @@
             CheckCircle, User, Award, Info, QrCode, Share2, Phone, Mail, 
             LayoutGrid, Download, Zap, PenTool, FileText, Printer, Save, 
             Compass, Coffee, Beer, Cigarette, BedDouble, CalendarDays, Keyboard,
-            Play
+            Play, Filter
         } from 'lucide-react';
 
         // --- CONFIGURATION ---
@@ -62,26 +62,12 @@
         const DEV_CONTACT = "0936 923 8834";
 
         // --- DATA ---
-        const SPONSORS = [
-            { id: 1, name: "Fuji-Haya Electric", tier: "Platinum", logo: "⚡" },
-            { id: 2, name: "Vertiv", tier: "Gold", logo: "🔋" },
-            { id: 3, name: "Megger", tier: "Gold", logo: "🔌" },
-            { id: 4, name: "Kingsine", tier: "Silver", logo: "📟" },
-        ];
-
-        const EXHIBITORS = [
-            { id: 101, name: "Kingsine Electric Automation", booth: "147", category: "Testing", desc: "Protection Relay Testing" },
-            { id: 102, name: "Safegrid / G&W Electric", booth: "285", category: "Power", desc: "Resilient power grids" },
-            { id: 103, name: "Fuji-Haya Electric", booth: "Main", category: "Switchgear", desc: "Low-Voltage Switchgear" },
-            { id: 104, name: "Vertiv", booth: "A-12", category: "Data Center", desc: "Critical infrastructure" },
-            { id: 105, name: "Megger", booth: "B-05", category: "Testing", desc: "Cable fault locating" },
-        ];
-
         const VENUE_GUIDE = [
             { category: "Dining", icon: Coffee, color: "text-orange-600 bg-orange-50", items: [
                 { name: "Vikings Luxury Buffet", loc: "SM MOA (By the Bay)", desc: "Massive international buffet." },
                 { name: "Texas Roadhouse", loc: "S Maison", desc: "Legendary steaks and ribs." },
-                { name: "The Coffee Bean", loc: "SMX Ground Level", desc: "Quick coffee breaks." }
+                { name: "The Coffee Bean", loc: "SMX Ground Level", desc: "Quick coffee breaks." },
+                { name: "Gloria Maris", loc: "MAAX Building", desc: "Chinese cuisine (Near Arena)." }
             ]},
             { category: "Bars", icon: Beer, color: "text-purple-600 bg-purple-50", items: [
                 { name: "Hard Rock Cafe", loc: "S Maison (Lvl 2)", desc: "Live music & cocktails." },
@@ -97,24 +83,77 @@
             ]}
         ];
 
+        // UPDATED SCHEDULE BASED ON UPLOADED IMAGES
         const RAW_EVENTS = [
-            { id: 1, day: "2025-11-24", start: "08:00", end: "12:00", title: "PEC Updates", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
-            { id: 2, day: "2025-11-24", start: "13:00", end: "17:00", title: "Standards Forum", location: "Zoom / Virtual", category: "Standards", type: "Virtual", points: 4 },
-            { id: 3, day: "2025-11-25", start: "08:00", end: "12:00", title: "Energy Efficiency", location: "Zoom / Virtual", category: "Technical", type: "Virtual", points: 3 },
-            { id: 5, day: "2025-11-26", start: "08:00", end: "17:00", title: "EE Research Contest", location: "Function Room 3", category: "Research", type: "Physical", points: 7 },
-            { id: 6, day: "2025-11-26", start: "06:00", end: "14:00", title: "Plant Tour: Pililla Wind Farm", location: "Off-site", category: "Tour", type: "Physical", points: 0 },
-            { id: 7, day: "2025-11-26", start: "10:00", end: "18:00", title: "3E XPO Opening", location: "SMX Halls 1-4", category: "Expo", type: "Physical", points: 0 },
-            { id: 8, day: "2025-11-27", start: "08:30", end: "12:00", title: "Grand Opening Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
-            { id: 9, day: "2025-11-27", start: "13:00", end: "17:00", title: "Plenary Sessions", location: "Function Rooms 1-4", category: "Technical", type: "Physical", points: 7 },
-            { id: 10, day: "2025-11-27", start: "18:00", end: "23:00", title: "Practitioners' Night", location: "Ballroom", category: "Social", type: "Physical", points: 0 },
-            { id: 11, day: "2025-11-28", start: "08:00", end: "17:00", title: "Simultaneous Technical", location: "Meeting Rooms 4-8", category: "Technical", type: "Physical", points: 7 },
-            { id: 12, day: "2025-11-28", start: "13:00", end: "16:00", title: "Gen. Membership Meeting", location: "Function Rooms 1-2", category: "Business", type: "Physical", points: 0 },
-            { id: 13, day: "2025-11-29", start: "08:00", end: "12:00", title: "RME Technical Session", location: "Function Room 3", category: "Technical", type: "Physical", points: 5 },
-            { id: 14, day: "2025-11-29", start: "13:00", end: "15:00", title: "Closing Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+            // --- MONDAY, NOV 24 ---
+            { id: 101, day: "2025-11-24", start: "08:00", end: "17:00", title: "Students' Activities", location: "Function Rooms 1-2", category: "Student", type: "Physical", points: 0 },
+            { id: 102, day: "2025-11-24", start: "08:00", end: "17:00", title: "RME Skills Olympics", location: "Function Room 3", category: "Technical", type: "Physical", points: 0 },
+            { id: 103, day: "2025-11-24", start: "08:00", end: "17:00", title: "Standards Committee", location: "Meeting Rooms 7 & 8", category: "Meeting", type: "Physical", points: 0 },
+            { id: 104, day: "2025-11-24", start: "08:00", end: "17:00", title: "Releasing of Kits", location: "Meeting Rooms 4, 5 & 6", category: "Registration", type: "Physical", points: 0 },
+            { id: 105, day: "2025-11-24", start: "08:00", end: "17:00", title: "Basketball", location: "Koten Gym, Pasay City", category: "Sports", type: "Physical", points: 0 },
+
+            // --- TUESDAY, NOV 25 ---
+            { id: 201, day: "2025-11-25", start: "08:00", end: "17:00", title: "Students' Activities", location: "Function Rooms 1-2", category: "Student", type: "Physical", points: 0 },
+            { id: 202, day: "2025-11-25", start: "08:00", end: "17:00", title: "Mega Webinar", location: "Function Room 3", category: "Technical", type: "Hybrid", points: 8 },
+            { id: 203, day: "2025-11-25", start: "08:00", end: "17:00", title: "PEC Activities", location: "Meeting Rooms 7 & 8", category: "Technical", type: "Physical", points: 0 },
+            { id: 204, day: "2025-11-25", start: "08:00", end: "17:00", title: "Technical Sessions (Hybrid)", location: "Meeting Rooms 4, 5 & 6", category: "Technical", type: "Hybrid", points: 8 },
+            { id: 205, day: "2025-11-25", start: "08:00", end: "22:00", title: "Golf Tournament", location: "The Orchard Golf and Country Club", category: "Sports", type: "Physical", points: 0 },
+            { id: 206, day: "2025-11-25", start: "13:00", end: "17:00", title: "Bowling Tournament", location: "AMF Puyat Superbowl, Makati", category: "Sports", type: "Physical", points: 0 },
+            { id: 207, day: "2025-11-25", start: "08:00", end: "17:00", title: "Basketball", location: "Koten Gym, Pasay City", category: "Sports", type: "Physical", points: 0 },
+            { id: 208, day: "2025-11-25", start: "08:00", end: "17:00", title: "Kit Distribution", location: "Meeting Room 3", category: "Registration", type: "Physical", points: 0 },
+
+            // --- WEDNESDAY, NOV 26 ---
+            { id: 301, day: "2025-11-26", start: "08:00", end: "17:00", title: "Students' Activities", location: "Function Rooms 1-2", category: "Student", type: "Physical", points: 0 },
+            { id: 302, day: "2025-11-26", start: "08:00", end: "17:00", title: "Mega Webinar", location: "Function Room 3", category: "Technical", type: "Hybrid", points: 8 },
+            { id: 303, day: "2025-11-26", start: "08:00", end: "17:00", title: "RME Forum", location: "Meeting Rooms 7-8", category: "Technical", type: "Physical", points: 4 },
+            { id: 304, day: "2025-11-26", start: "08:00", end: "17:00", title: "Electrical Safety Conference", location: "Meeting Room 4, 5 & 6", category: "Technical", type: "Physical", points: 4 },
+            { id: 305, day: "2025-11-26", start: "06:00", end: "22:00", title: "Plant Tour", location: "Pililla Windmill Power Source", category: "Tour", type: "Physical", points: 0 },
+            { id: 306, day: "2025-11-26", start: "08:00", end: "17:00", title: "Basketball", location: "Koten Gym, Pasay City", category: "Sports", type: "Physical", points: 0 },
+            { id: 307, day: "2025-11-26", start: "08:00", end: "17:00", title: "Volleyball", location: "MET Park, MOA Complex", category: "Sports", type: "Physical", points: 0 },
+            { id: 308, day: "2025-11-26", start: "08:00", end: "17:00", title: "Corporate Social Responsibility", location: "TBA", category: "Social", type: "Physical", points: 0 },
+            { id: 309, day: "2025-11-26", start: "08:00", end: "13:00", title: "Opening of the Exhibit", location: "Halls 1-4, Function Room 5", category: "Expo", type: "Physical", points: 0 },
+
+            // --- THURSDAY, NOV 27 ---
+            { id: 401, day: "2025-11-27", start: "08:30", end: "11:30", title: "Opening Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+            { id: 402, day: "2025-11-27", start: "10:00", end: "19:00", title: "Exhibit Viewing", location: "Halls 1-4, Function Room 5", category: "Expo", type: "Physical", points: 0 },
+            { id: 403, day: "2025-11-27", start: "08:00", end: "17:00", title: "Research & Devt Committee", location: "Meeting Rooms 4, 5 & 6", category: "Technical", type: "Physical", points: 4 },
+            { id: 404, day: "2025-11-27", start: "08:00", end: "12:00", title: "Academe Forum", location: "Meeting Room 7 & 8", category: "Technical", type: "Physical", points: 4 },
+            { id: 405, day: "2025-11-27", start: "13:00", end: "17:00", title: "EE Educator's Forum", location: "Meeting Room 7 & 8", category: "Technical", type: "Physical", points: 4 },
+            { id: 406, day: "2025-11-27", start: "08:00", end: "12:00", title: "Young Professionals Forum", location: "Philflex Bay Center, Pasay", category: "Technical", type: "Physical", points: 3 },
+            { id: 407, day: "2025-11-27", start: "08:00", end: "18:00", title: "IIEE WEN Forum", location: "Exhibit Area", category: "Technical", type: "Physical", points: 3 },
+            { id: 408, day: "2025-11-27", start: "11:00", end: "15:00", title: "BEE / COFNAP / BOG Luncheon", location: "Gloria Maris, MAAX", category: "Business", type: "Physical", points: 0 },
+            { id: 409, day: "2025-11-27", start: "13:00", end: "23:59", title: "Exhibitors Appreciation Night", location: "Function Room 4", category: "Social", type: "Physical", points: 0 },
+            { id: 410, day: "2025-11-27", start: "13:30", end: "16:30", title: "Technical Session (Track 1)", location: "Function Room 1", category: "Technical", type: "Physical", points: 3 },
+            { id: 411, day: "2025-11-27", start: "13:30", end: "16:30", title: "Technical Session (Track 2)", location: "Function Room 2", category: "Technical", type: "Physical", points: 3 },
+            { id: 412, day: "2025-11-27", start: "13:30", end: "16:30", title: "Technical Session (Track 3)", location: "Function Room 3", category: "Technical", type: "Physical", points: 3 },
+            { id: 413, day: "2025-11-27", start: "13:30", end: "16:30", title: "Technical Session (Track 4)", location: "Function Room 4", category: "Technical", type: "Physical", points: 3 },
+            { id: 414, day: "2025-11-27", start: "18:00", end: "23:59", title: "Practitioners' Night", location: "Function Rooms 1-4", category: "Social", type: "Physical", points: 0 },
+
+            // --- FRIDAY, NOV 28 ---
+            { id: 501, day: "2025-11-28", start: "08:30", end: "12:00", title: "Technical Session (Morning 1)", location: "Function Room 1", category: "Technical", type: "Physical", points: 3 },
+            { id: 502, day: "2025-11-28", start: "08:30", end: "12:00", title: "Technical Session (Morning 2)", location: "Function Room 2", category: "Technical", type: "Physical", points: 3 },
+            { id: 503, day: "2025-11-28", start: "08:30", end: "12:00", title: "Technical Session (Morning 3)", location: "Function Room 3", category: "Technical", type: "Physical", points: 3 },
+            { id: 504, day: "2025-11-28", start: "08:30", end: "12:00", title: "Technical Session (Morning 4)", location: "Function Room 4", category: "Technical", type: "Physical", points: 3 },
+            { id: 505, day: "2025-11-28", start: "13:00", end: "15:00", title: "Technical Session (Afternoon 1)", location: "Function Room 1", category: "Technical", type: "Physical", points: 2 },
+            { id: 506, day: "2025-11-28", start: "13:00", end: "15:00", title: "Technical Session (Afternoon 2)", location: "Function Room 2", category: "Technical", type: "Physical", points: 2 },
+            { id: 507, day: "2025-11-28", start: "13:00", end: "15:00", title: "Technical Session (Afternoon 3)", location: "Function Room 3", category: "Technical", type: "Physical", points: 2 },
+            { id: 508, day: "2025-11-28", start: "15:00", end: "18:00", title: "General Membership Meeting", location: "Function Rooms 1-3", category: "Business", type: "Physical", points: 0 },
+
+            // --- SATURDAY, NOV 29 ---
+            { id: 601, day: "2025-11-29", start: "08:30", end: "12:00", title: "Career Dev Mentoring", location: "Function Room 1", category: "Student", type: "Physical", points: 0 },
+            { id: 602, day: "2025-11-29", start: "08:30", end: "15:30", title: "Technical Session (All Day)", location: "Function Room 2", category: "Technical", type: "Physical", points: 6 },
+            { id: 603, day: "2025-11-29", start: "08:30", end: "15:30", title: "Technical Session (All Day)", location: "Function Room 4", category: "Technical", type: "Physical", points: 6 },
+            { id: 604, day: "2025-11-29", start: "08:30", end: "11:30", title: "RME Forum", location: "Function Room 3", category: "Technical", type: "Physical", points: 3 },
+            { id: 605, day: "2025-11-29", start: "13:00", end: "15:30", title: "Technical Session", location: "Function Room 1", category: "Technical", type: "Physical", points: 2 },
+            { id: 606, day: "2025-11-29", start: "13:00", end: "15:30", title: "Technical Session", location: "Function Room 3", category: "Technical", type: "Physical", points: 2 },
+            { id: 607, day: "2025-11-29", start: "16:30", end: "20:00", title: "Closing Ceremonies", location: "Function Rooms 1-4", category: "Main", type: "Physical", points: 0 },
+            { id: 608, day: "2025-11-29", start: "08:00", end: "16:00", title: "Canvassing of Ballots", location: "Meeting Rooms 4, 5 & 6", category: "Business", type: "Physical", points: 0 },
+            { id: 609, day: "2025-11-29", start: "08:00", end: "12:00", title: "Chapter Officers Meeting", location: "Microtel Hotel, Pasay City", category: "Business", type: "Physical", points: 0 },
         ];
 
         // --- HELPERS ---
         const formatTime = (timeStr) => {
+            if(!timeStr) return '';
             const [h, m] = timeStr.split(':');
             const hour = parseInt(h);
             const ampm = hour >= 12 ? 'PM' : 'AM';
@@ -225,7 +264,7 @@
             // --- RENDER CALENDAR ---
             const renderCalendar = () => {
                 const daysInMonth = 30;
-                const startDayOffset = 6; 
+                const startDayOffset = 6; // Nov 1, 2025 is Saturday
                 const grid = [];
                 for (let i = 0; i < startDayOffset; i++) grid.push(null);
                 for (let i = 1; i <= daysInMonth; i++) grid.push(i);
@@ -381,40 +420,51 @@
                         )}
 
                         {/* EVENT LIST */}
-                        {view === 'home' && filteredEvents.map(ev => (
-                            <div key={ev.id} className={`bg-white p-4 rounded-xl shadow-sm border-l-4 ${ev.status === 'now' ? 'border-red-500 ring-1 ring-red-100' : ev.status === 'soon' ? 'border-orange-400' : 'border-blue-500'}`}>
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <span className={`text-sm font-bold ${ev.status === 'now' ? 'text-red-600' : 'text-blue-900'}`}>
-                                            {formatTime(ev.start)} - {formatTime(ev.end)}
-                                        </span>
-                                        {ev.status === 'now' && <span className="ml-2 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded animate-pulse">LIVE</span>}
+                        {view === 'home' && (
+                            <>
+                                {filteredEvents.length === 0 && (
+                                    <div className="text-center py-10 text-gray-400">
+                                        <p>No events found.</p>
+                                        <button onClick={() => {setQuery(''); setTab('all');}} className="text-blue-500 text-sm mt-2 font-bold">Clear Filters</button>
                                     </div>
-                                    <button onClick={() => toggleFav(ev.id)}>
-                                        <Star size={20} className={ev.isFav ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
-                                    </button>
-                                </div>
-                                <h3 className="font-bold text-gray-800 leading-tight mb-1">{ev.title}</h3>
-                                <div className="flex items-center text-xs text-gray-500 mb-3">
-                                    <MapPin size={12} className="mr-1"/> {ev.location}
-                                    <span className="mx-2">•</span> {formatDate(ev.day)}
-                                </div>
-                                <div className="flex gap-2 border-t pt-2">
-                                    <button onClick={() => { setNoteId(ev.id); setNoteText(notes[ev.id] || ""); }} 
-                                        className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${ev.hasNote ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
-                                        <PenTool size={12}/> {ev.hasNote ? 'Edit Note' : 'Note'}
-                                    </button>
-                                    {ev.points > 0 && (
-                                        <button onClick={() => {
-                                            setAttended(prev => prev.includes(ev.id) ? prev.filter(i => i !== ev.id) : [...prev, ev.id]);
-                                            showNotify("Attendance Updated");
-                                        }} className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${attended.includes(ev.id) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                            <Zap size={12} className={attended.includes(ev.id) ? "fill-current" : ""}/> {ev.points} CPD
-                                        </button>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
+                                )}
+                                {filteredEvents.map(ev => (
+                                    <div key={ev.id} className={`bg-white p-4 rounded-xl shadow-sm border-l-4 ${ev.status === 'now' ? 'border-red-500 ring-1 ring-red-100' : ev.status === 'soon' ? 'border-orange-400' : 'border-blue-500'}`}>
+                                        <div className="flex justify-between items-start mb-2">
+                                            <div>
+                                                <span className={`text-sm font-bold ${ev.status === 'now' ? 'text-red-600' : 'text-blue-900'}`}>
+                                                    {formatTime(ev.start)} - {formatTime(ev.end)}
+                                                </span>
+                                                {ev.status === 'now' && <span className="ml-2 bg-red-100 text-red-600 text-[10px] font-bold px-2 py-0.5 rounded animate-pulse">LIVE</span>}
+                                            </div>
+                                            <button onClick={() => toggleFav(ev.id)}>
+                                                <Star size={20} className={ev.isFav ? "fill-yellow-400 text-yellow-400" : "text-gray-300"} />
+                                            </button>
+                                        </div>
+                                        <h3 className="font-bold text-gray-800 leading-tight mb-1">{ev.title}</h3>
+                                        <div className="flex flex-wrap items-center text-xs text-gray-500 mb-3 gap-2">
+                                            <span className="flex items-center"><MapPin size={12} className="mr-1"/> {ev.location}</span>
+                                            <span className="hidden sm:inline">•</span>
+                                            <span className="flex items-center text-blue-600 bg-blue-50 px-2 py-0.5 rounded font-medium">{ev.category}</span>
+                                        </div>
+                                        <div className="flex gap-2 border-t pt-2">
+                                            <button onClick={() => { setNoteId(ev.id); setNoteText(notes[ev.id] || ""); }} 
+                                                className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${ev.hasNote ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                <PenTool size={12}/> {ev.hasNote ? 'Edit Note' : 'Note'}
+                                            </button>
+                                            {ev.points > 0 && (
+                                                <button onClick={() => {
+                                                    setAttended(prev => prev.includes(ev.id) ? prev.filter(i => i !== ev.id) : [...prev, ev.id]);
+                                                    showNotify("Attendance Updated");
+                                                }} className={`flex-1 py-1.5 rounded text-xs font-bold flex items-center justify-center gap-1 ${attended.includes(ev.id) ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                                                    <Zap size={12} className={attended.includes(ev.id) ? "fill-current" : ""}/> {ev.points} CPD
+                                                </button>
+                                            )}
+                                        </div>
+                                    </div>
+                                ))}
+                            </>
+                        )}
 
                         {/* VENUE GUIDE */}
                         {view === 'guide' && (
@@ -479,6 +529,25 @@
                                     <div className="text-blue-200 text-sm">Total CPD Points Earned</div>
                                 </div>
                                 <p className="text-gray-500 text-xs">Check into events to earn points.</p>
+                                <div className="mt-8 text-left">
+                                    <h3 className="font-bold text-gray-700 mb-2 ml-1">History</h3>
+                                    <div className="bg-white rounded-xl shadow-sm divide-y">
+                                        {attended.length === 0 && <div className="p-4 text-gray-400 text-sm text-center">No events attended yet.</div>}
+                                        {attended.map(id => {
+                                            const ev = RAW_EVENTS.find(e => e.id === id);
+                                            if(!ev) return null;
+                                            return (
+                                                <div key={id} className="p-3 flex justify-between items-center">
+                                                    <div>
+                                                        <div className="font-bold text-sm text-gray-800">{ev.title}</div>
+                                                        <div className="text-xs text-gray-500">{ev.day}</div>
+                                                    </div>
+                                                    <div className="font-bold text-green-600">+{ev.points}</div>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                </div>
                             </div>
                         )}
 
@@ -492,7 +561,7 @@
                         <button onClick={() => setView('calendar')} className={`flex flex-col items-center gap-1 ${view === 'calendar' ? 'text-blue-600' : ''}`}>
                             <CalendarDays size={22} /> Calendar
                         </button>
-                        <button onClick={() => setView('notes')} className="relative -top-6 bg-yellow-400 text-blue-900 p-4 rounded-full shadow-xl border-4 border-gray-50">
+                        <button onClick={() => setView('notes')} className="relative -top-6 bg-yellow-400 text-blue-900 p-4 rounded-full shadow-xl border-4 border-gray-50 transform transition-transform active:scale-95">
                             <PenTool size={24} />
                         </button>
                         <button onClick={() => setView('cpd')} className={`flex flex-col items-center gap-1 ${view === 'cpd' ? 'text-blue-600' : ''}`}>
@@ -518,7 +587,6 @@
                                     <button onClick={() => setNoteId(null)}><X size={20}/></button>
                                 </div>
                                 <textarea 
-                                    inputMode="text"
                                     className="w-full h-40 bg-yellow-50 border border-yellow-200 rounded-xl p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none font-sans text-base"
                                     placeholder="Type your key takeaways here..."
                                     value={noteText}
@@ -535,17 +603,17 @@
                     {/* Side Menu */}
                     {menuOpen && (
                         <div className="fixed inset-0 bg-black/50 z-50" onClick={() => setMenuOpen(false)}>
-                            <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-2xl p-6" onClick={e => e.stopPropagation()}>
+                            <div className="absolute right-0 top-0 h-full w-64 bg-white shadow-2xl p-6 animate-slide-up" onClick={e => e.stopPropagation()}>
                                 <div className="flex justify-between items-center mb-8">
                                     <h2 className="font-bold text-xl text-blue-900">Menu</h2>
                                     <button onClick={() => setMenuOpen(false)}><X /></button>
                                 </div>
                                 <div className="space-y-4">
-                                    <button onClick={() => { setView('home'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Schedule List</button>
-                                    <button onClick={() => { setView('calendar'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Full Calendar</button>
-                                    <button onClick={() => { setView('guide'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">Venue Guide</button>
-                                    <button onClick={() => { setView('notes'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">My Notes</button>
-                                    <button onClick={() => { setView('cpd'); setMenuOpen(false); }} className="w-full text-left py-2 border-b">CPD Tracker</button>
+                                    <button onClick={() => { setView('home'); setMenuOpen(false); }} className="w-full text-left py-2 border-b text-gray-700 font-medium hover:text-blue-600">Schedule List</button>
+                                    <button onClick={() => { setView('calendar'); setMenuOpen(false); }} className="w-full text-left py-2 border-b text-gray-700 font-medium hover:text-blue-600">Full Calendar</button>
+                                    <button onClick={() => { setView('guide'); setMenuOpen(false); }} className="w-full text-left py-2 border-b text-gray-700 font-medium hover:text-blue-600">Venue Guide</button>
+                                    <button onClick={() => { setView('notes'); setMenuOpen(false); }} className="w-full text-left py-2 border-b text-gray-700 font-medium hover:text-blue-600">My Notes</button>
+                                    <button onClick={() => { setView('cpd'); setMenuOpen(false); }} className="w-full text-left py-2 border-b text-gray-700 font-medium hover:text-blue-600">CPD Tracker</button>
                                 </div>
                                 <div className="mt-8 p-4 bg-blue-50 rounded-xl">
                                     <p className="text-xs text-blue-500 font-bold uppercase mb-2">Developer</p>
@@ -558,7 +626,7 @@
 
                     {/* Toast Notification */}
                     {notify && (
-                        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl text-sm font-bold z-50 animate-fade-in flex items-center gap-2">
+                        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-xl text-sm font-bold z-50 animate-fade-in flex items-center gap-2 whitespace-nowrap">
                             <CheckCircle size={16} className="text-green-400"/> {notify}
                         </div>
                     )}
