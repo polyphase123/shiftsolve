@@ -58,7 +58,7 @@
             CheckCircle, User, Award, Info, QrCode, Share2, Phone, Mail, 
             LayoutGrid, Download, Zap, PenTool, FileText, Printer, Save, 
             Compass, Coffee, Beer, Cigarette, BedDouble, CalendarDays, Keyboard,
-            Play, Filter
+            Play, Filter, ShoppingBag, Car
         } from 'lucide-react';
 
         // --- CONFIGURATION ---
@@ -71,17 +71,35 @@
             { category: "Dining", icon: Coffee, color: "text-orange-600 bg-orange-50", items: [
                 { name: "Vikings Luxury Buffet", loc: "SM MOA (By the Bay)", desc: "Massive international buffet." },
                 { name: "Texas Roadhouse", loc: "S Maison", desc: "Legendary steaks and ribs." },
-                { name: "The Coffee Bean", loc: "SMX Ground Level", desc: "Quick coffee breaks." },
-                { name: "Gloria Maris", loc: "MAAX Building", desc: "Chinese cuisine (Near Arena)." }
+                { name: "Gloria Maris", loc: "MAAX Building", desc: "Chinese cuisine (Near Arena)." },
+                { name: "Manam", loc: "SM MOA Main Mall", desc: "Modern Filipino comfort food." },
+                { name: "Din Tai Fung", loc: "SM MOA", desc: "World-famous xiao long bao." }
             ]},
-            { category: "Bars", icon: Beer, color: "text-purple-600 bg-purple-50", items: [
+            { category: "Quick Coffee", icon: Coffee, color: "text-amber-700 bg-amber-50", items: [
+                { name: "The Coffee Bean", loc: "SMX Ground Level", desc: "Quick coffee breaks." },
+                { name: "Starbucks Reserve", loc: "S Maison", desc: "Premium coffee selection." },
+                { name: "J.CO Donuts", loc: "SM MOA", desc: "Coffee and donuts." }
+            ]},
+            { category: "Bars & Social", icon: Beer, color: "text-purple-600 bg-purple-50", items: [
                 { name: "Hard Rock Cafe", loc: "S Maison (Lvl 2)", desc: "Live music & cocktails." },
-                { name: "C Lounge", loc: "Conrad Manila", desc: "Rooftop sunset views." }
+                { name: "C Lounge", loc: "Conrad Manila", desc: "Rooftop sunset views." },
+                { name: "Buffalo Wild Wings", loc: "S Maison", desc: "Sports bar and wings." }
             ]},
             { category: "Hotels", icon: BedDouble, color: "text-blue-600 bg-blue-50", items: [
                 { name: "Conrad Manila", loc: "Direct Access", desc: "Connected via bridges." },
                 { name: "Microtel by Wyndham", loc: "Coral Way", desc: "Walking distance." },
-                { name: "Hotel 101 Manila", loc: "EDSA Ext", desc: "Popular for delegations." }
+                { name: "Hotel 101 Manila", loc: "EDSA Ext", desc: "Popular for delegations." },
+                { name: "Tryp by Wyndham", loc: "Seaside Blvd", desc: "Modern hotel nearby." }
+            ]},
+            { category: "Essentials", icon: ShoppingBag, color: "text-green-600 bg-green-50", items: [
+                { name: "Watsons", loc: "SMX Ground / MOA", desc: "Pharmacy and personal care." },
+                { name: "7-Eleven", loc: "Near SMX Entrance", desc: "24/7 Convenience store." },
+                { name: "SM Supermarket", loc: "SM MOA Ground", desc: "Groceries and supplies." }
+            ]},
+            { category: "Transport", icon: Car, color: "text-indigo-600 bg-indigo-50", items: [
+                { name: "Grab Pick-up", loc: "SMX Front / Tower", desc: "Designated app pick-up points." },
+                { name: "Taxi Stand", loc: "SM MOA Terminal", desc: "Regular metered taxis." },
+                { name: "Jeepney Terminal", loc: "MOA Transport Terminal", desc: "Routes to Pasay/Manila." }
             ]},
             { category: "Smoking", icon: Cigarette, color: "text-gray-600 bg-gray-100", items: [
                 { name: "Designated Area", loc: "Back of SMX", desc: "Strictly outdoor only." }
