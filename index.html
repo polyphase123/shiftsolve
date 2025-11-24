@@ -307,8 +307,13 @@
         function App() {
             const [isLoading, setIsLoading] = useState(true);
             const [view, setView] = useState('schedule');
-            const [subTab, setSubTab] = useState('ALL');
-            const [simTime, setSimTime] = useState(new Date(2025, 10, 28, 9, 0));
+            
+            // UPDATED: Default to 'NOW' to show current events immediately
+            const [subTab, setSubTab] = useState('NOW');
+            
+            // UPDATED: Set simulation time to Nov 24, 2025 (Monday) at 9:00 AM
+            const [simTime, setSimTime] = useState(new Date(2025, 10, 24, 9, 0));
+            
             const [searchQuery, setSearchQuery] = useState('');
             
             // Calendar State
