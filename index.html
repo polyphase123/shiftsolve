@@ -92,9 +92,10 @@
             100% { opacity: 0; transform: translateY(-120px); }
         }
 
-        .anim-block { animation: blockBump 0.2s ease-out 0.5s; }
-        .anim-coin { animation: coinPop 0.8s ease-out 0.5s forwards; }
-        .anim-score { animation: scoreFloat 0.8s ease-out 0.9s forwards; }
+        /* Updated animations to trigger on class add without delay */
+        .anim-block { animation: blockBump 0.2s ease-out; }
+        .anim-coin { animation: coinPop 0.6s ease-out forwards; }
+        .anim-score { animation: scoreFloat 0.8s ease-out 0.2s forwards; }
 
         .pixel-corners {
             image-rendering: pixelated;
@@ -197,29 +198,72 @@
         // --- COMPONENTS ---
 
         function SplashScreen({ onComplete }) {
-            useEffect(() => {
-                const timer = setTimeout(() => {
+            const [isAnimating, setIsAnimating] = useState(false);
+            const [hasStarted, setHasStarted] = useState(false);
+
+            const playCoinSound = () => {
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    
+                    const ctx = new AudioContext();
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+
+                    // Super Mario Coin Sound Structure: B5 (988Hz) -> E6 (1319Hz)
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(988, ctx.currentTime);
+                    osc.frequency.setValueAtTime(1319, ctx.currentTime + 0.08);
+
+                    // Envelope
+                    gain.gain.setValueAtTime(0.05, ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
+
+                    osc.start(ctx.currentTime);
+                    osc.stop(ctx.currentTime + 0.5);
+                } catch (e) {
+                    console.error("Audio play failed", e);
+                }
+            };
+
+            const handleStart = () => {
+                if (hasStarted) return;
+                setHasStarted(true);
+                setIsAnimating(true);
+                playCoinSound();
+
+                // Wait for animation then complete
+                setTimeout(() => {
                     onComplete();
-                }, 3000); // Wait 3 seconds
-                return () => clearTimeout(timer);
-            }, [onComplete]);
+                }, 1500); 
+            };
 
             return (
-                <div className="fixed inset-0 z-[100] bg-blue-900 flex flex-col items-center justify-center overflow-hidden">
-                    <div className="relative flex flex-col items-center justify-end h-64 w-full">
+                <div 
+                    onClick={handleStart}
+                    className="fixed inset-0 z-[100] bg-blue-900 flex flex-col items-center justify-center overflow-hidden cursor-pointer"
+                >
+                    <div className="relative flex flex-col items-center justify-end h-64 w-full mb-8">
                         
                         {/* THE COIN */}
-                        <div className="absolute w-12 h-12 bg-yellow-400 rounded-full border-4 border-yellow-200 flex items-center justify-center shadow-lg anim-coin z-10">
-                            <span className="mario-font text-yellow-700 font-bold text-xs">50</span>
-                        </div>
+                        {isAnimating && (
+                            <div className="absolute w-12 h-12 bg-yellow-400 rounded-full border-4 border-yellow-200 flex items-center justify-center shadow-lg anim-coin z-10">
+                                <span className="mario-font text-yellow-700 font-bold text-xs">50</span>
+                            </div>
+                        )}
                         
                         {/* SCORE TEXT */}
-                        <div className="absolute mario-font text-white text-sm anim-score z-20">
-                            50th
-                        </div>
+                        {isAnimating && (
+                            <div className="absolute mario-font text-white text-sm anim-score z-20">
+                                50th
+                            </div>
+                        )}
 
                         {/* QUESTION BLOCK */}
-                        <div className="w-16 h-16 bg-yellow-500 rounded-lg border-b-4 border-r-4 border-yellow-700 relative anim-block z-0 flex items-center justify-center pixel-corners shadow-xl">
+                        <div className={`w-16 h-16 bg-yellow-500 rounded-lg border-b-4 border-r-4 border-yellow-700 relative z-0 flex items-center justify-center pixel-corners shadow-xl ${isAnimating ? 'anim-block' : 'animate-bounce'}`}>
                             <div className="absolute top-1 left-1 w-2 h-2 bg-yellow-200 rounded-full opacity-50"></div>
                             <span className="mario-font text-yellow-800 text-3xl font-bold">?</span>
                             <div className="absolute inset-0 border-2 border-yellow-600 opacity-20 rounded-lg"></div>
@@ -227,9 +271,9 @@
 
                     </div>
                     
-                    <div className="mt-12 text-center animate-pulse">
-                        <h1 className="text-white text-2xl font-bold mb-1">IIEE 50th</h1>
-                        <p className="text-blue-300 text-sm tracking-widest">LOADING CONVENTION...</p>
+                    <div className={`text-center transition-opacity duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
+                        <h1 className="text-white text-2xl font-bold mb-2">IIEE 50th</h1>
+                        <p className="text-yellow-300 text-xs tracking-widest mario-font animate-pulse">TAP TO START</p>
                     </div>
                 </div>
             );
