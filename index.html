@@ -129,6 +129,21 @@
             border-radius: 50%;
             margin-top: 2px;
         }
+        
+        /* Speaker Avatar */
+        .speaker-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #6b7280;
+            border: 2px solid #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
     </style>
 </head>
 <body>
@@ -140,65 +155,79 @@
         // --- DATA ---
         const createDate = (day, hour, minute) => new Date(2025, 10, day, hour, minute);
 
+        // Speaker Database
+        const speakerDB = {
+            'S1': { 
+                id: 'S1', 
+                name: 'Engr. Alberto R. Herrera Jr.', 
+                creds: 'PEE, ASEAN Engr.', 
+                role: '2025 National President',
+                bio: 'The 2025 National President of the Institute of Integrated Electrical Engineers of the Philippines (IIEE). Leading the organization during its milestone 50th year "Golden Legacy". Focused on Integrity, Innovation, Empowerment, and Excellence.'
+            },
+            'S2': { 
+                id: 'S2', 
+                name: 'Engr. Franz Xyrlo I. Tobias', 
+                creds: 'PEE', 
+                role: 'App Developer & Tech Consultant',
+                bio: 'Professional Electrical Engineer and the developer of this IIEE Convention App. A passionate advocate for digital transformation in the engineering field and modernizing technical conferences.'
+            },
+            'S3': { 
+                id: 'S3', 
+                name: 'Engr. Cleofe T. Caidic', 
+                creds: 'PEE, REE', 
+                role: 'VP for Technical Affairs',
+                bio: 'Serving as the 2025 Vice President for Technical Affairs. Spearheading the technical advancements, standardization efforts, and continuing professional education programs for the institute.'
+            },
+            'S4': { 
+                id: 'S4', 
+                name: 'Engr. Adrian L. Rey', 
+                creds: 'PEE', 
+                role: 'VP for External Affairs',
+                bio: 'The 2025 Vice President for External Affairs. Responsible for strengthening partnerships with government agencies, international organizations, and industry stakeholders.'
+            },
+            'S5': { 
+                id: 'S5', 
+                name: 'Engr. Robert U. Mabulay', 
+                creds: 'PEE', 
+                role: 'VP for Internal Affairs',
+                bio: 'The 2025 Vice President for Internal Affairs, overseeing chapter operations and membership welfare across the national organization.'
+            }
+        };
+
         const scheduleData = [
-            // Nov 24 (Monday) - UPDATED
+            // Nov 24 (Monday)
             { id: 101, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Mon' },
-            { id: 102, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Registered Master Electrician Skills Olympics', venue: 'Function Room 3', type: 'competition', dayName: 'Mon' },
-            { id: 103, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Standards Committee Forum: Powering the Energy Transition', venue: 'Meeting Rooms 7 & 8', type: 'meeting', dayName: 'Mon', description: 'Speakers: Dir. Neil P. Catajay, Engr. Ferdinand B. Binondo, Engr. Jayson G. Corpuz, Engr. Rey Kindar V. Cale, Engr. Raul C. Balogal, Engr. Charles L. Singson, Engr. Laurenne E. Dungca, Mr. Colin Steley, Mr. Paul Loke, Ms. Sherry He, Engr. Tristan Daniel C. Zabala, Engr. Ronmar Gonzales, Engr. Conrado C. Binondo' },
+            { id: 102, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Skills Olympics', venue: 'Function Room 3', type: 'competition', dayName: 'Mon' },
+            { id: 103, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Standards Committee', venue: 'Meeting Rooms 7 & 8', type: 'meeting', dayName: 'Mon', speakerId: 'S4' },
             { id: 104, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Releasing of Kits', venue: 'Meeting Rooms 4, 5 & 6', type: 'admin', dayName: 'Mon' },
             { id: 105, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Basketball', venue: 'Koten Gym, Pasay City', type: 'sports', dayName: 'Mon' },
 
-            // Nov 25 (Tuesday) - UPDATED
+            // Nov 25 (Tuesday)
             { id: 201, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Tue' },
-            { id: 202, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: Technology Trends in EE (Present & Future)', venue: 'Function Room 3', type: 'technical', dayName: 'Tue', description: 'Speakers: Fsinsp Darwin D. Orsolino (BFP), Atty. April Domingo (Suppliers), Engr. Adrian L. Ley (Hybrid Power), Engr. Patrick Sean Pineda (Safety), Dr. Juergen Unfried (Energy Efficiency), Mr. Nabaroon Goswami (Lightning Protection)' },
-            { id: 203, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Towards Harmonized Electrical Practices (PEC 1 & 2)', venue: 'Function Room 7 & 8', type: 'technical', dayName: 'Tue', description: 'Speakers: Engr. Generoso G. Restubog (IIEE Guidelines), Engr. Reynaldo R. Santiago (PEC 10th Ed Updates), Engr. Jeffrey I. Calderon (Grid Forming Inverters)' },
-            { id: 204, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: EE Education, Research & Safety', venue: 'Meeting Rooms 4, 5 & 6', type: 'technical', dayName: 'Tue', description: 'Speakers: Dr. Romano Q. Neyra (Safety Framework), Engr. Ryan Anthony K. Umali (Design Classified Loc), Engr. Erwin J. Salvador (Academia-Industry Gap), Engr. Analyn C. Fernandez (HIRAC)' },
+            { id: 202, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Mega Webinar', venue: 'Function Room 3', type: 'technical', dayName: 'Tue' },
+            { id: 203, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'PEC Activities', venue: 'Meeting Rooms 7 & 8', type: 'technical', dayName: 'Tue' },
+            { id: 204, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Technical Sessions', venue: 'Meeting Rooms 4, 5 & 6', type: 'technical', dayName: 'Tue', speakerId: 'S3' },
 
             // Nov 26 (Wednesday)
             { id: 301, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Wed' },
-            { id: 302, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Technology Trends in Electrical Engineering', venue: 'Function Room 3', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. Michael M. Evangelista (Transformer Insulation), Engr. Rodolfo Penalosa (Electro-Mechanical Systems Energy Efficiency)' },
-            { id: 303, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Technical Sessions', venue: 'Meeting Room 7 & 8', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. Inigo V. Escopete Jr. (Thermal Imaging), Engr. Ray Anthony V. Rodriguez (AI for Electricians), Engr. Marvin A. Radaza (Motor Control), Engr. Roel M. Bebero (Solar PV), Engr. Armando R. Diaz (Grounding)' },
-            { id: 304, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Electrical Safety Conference', venue: 'Meeting Room 4-6', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. J.M. Batino, Engr. A.R. Herrera Jr., Engr. C.T. Caidic, Engr. A.C. Fernandez (OSH Law), Engr. E.C. Mejia (EV Fire Safety), Engr. L.E. Dungca (Transformers), Engr. V.C. Abejero, Engr. A.F. Gumboc, Mr. S. Mohamed, Engr. J.P.M. Tolentino' },
+            { id: 302, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Mega Webinar', venue: 'Function Room 3', type: 'technical', dayName: 'Wed' },
             { id: 307, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 18, endM: 0, timeDisplay: '8:00 AM - 6:00 PM', title: 'IIEE WEN Forum', venue: 'Exhibit Area', type: 'forum', dayName: 'Wed' },
 
             // Nov 27 (Thursday)
             { id: 401, dateStr: '2025-11-27', day: 27, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Forum', venue: 'Meeting Room 7-8', type: 'forum', dayName: 'Thu' },
-            { id: 402, dateStr: '2025-11-27', day: 27, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Safety Conference', venue: 'Meeting Room 4, 5 & 6', type: 'technical', dayName: 'Thu' },
-            { id: 404, dateStr: '2025-11-27', day: 27, startH: 8, startM: 30, endH: 11, endM: 30, timeDisplay: '8:30 AM - 11:30 AM', title: 'Opening Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Thu' },
-            
-            // Nov 27 PM Split
-            { id: 405, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Power System Planning', venue: 'Function Room 1', type: 'technical', dayName: 'Thu', description: 'Speakers: Engr. Emiere Daplin Lingatog (Load Forecasting), Engr. Anderson S. Ongspying (Customer Choice Program)' },
-            { id: 406, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Power System Ops & Control', venue: 'Function Room 2', type: 'technical', dayName: 'Thu', description: 'Speakers: Hon. Jaime V. Mendoza (Power Line Corridor), Engr. Roel B. Calano (Principle of Least Action in Generation)' },
-            { id: 407, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Electrical System Design', venue: 'Function Room 3', type: 'technical', dayName: 'Thu', description: 'Speaker: Hon. Francis V. Mapile (BEE Res No. 14 - Career Progression for Adv. EE Level 8)' },
-            { id: 408, dateStr: '2025-11-27', day: 27, startH: 13, startM: 0, endH: 17, endM: 0, timeDisplay: '1:00 PM - 5:00 PM', title: 'FORUM: Bridging Local & Int\'l Standards', venue: 'Function Room 4', type: 'forum', dayName: 'Thu', description: 'Speakers: Mr. Jo Cops (Keynote), Dir. Neil P. Catajay, Mr. Damien Lee, Dr. George Borlase, Mr. Kolin Low' },
+            { id: 402, dateStr: '2025-11-27', day: 27, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Safety Conference', venue: 'Meeting Room 4, 5 & 6', type: 'technical', dayName: 'Thu', speakerId: 'S5' },
+            { id: 404, dateStr: '2025-11-27', day: 27, startH: 8, startM: 30, endH: 11, endM: 30, timeDisplay: '8:30 AM - 11:30 AM', title: 'Opening Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Thu', speakerId: 'S1' },
+            { id: 405, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 16, endM: 30, timeDisplay: '1:30 PM - 4:30 PM', title: 'Simultaneous Tech Sessions', venue: 'Function Rooms 1-4', type: 'technical', dayName: 'Thu' },
 
             // Nov 28 (Friday)
-            { id: 501, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Power System Planning & Electricity Market', venue: 'Function Room 1', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. Jerome M. Peralta (Embedded Generation Protection), Engr. Frederick R. Calamlam (Iberian Blackout), Engr. Amelia L. Cumpas (High Voltage Metering)' },
+            { id: 501, dateStr: '2025-11-28', day: 28, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Tech Session: Renewable Energy', venue: 'Function Room 1', type: 'technical', dayName: 'Fri', speakerId: 'S2' },
+            { id: 502, dateStr: '2025-11-28', day: 28, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Tech Session: Grid Modernization', venue: 'Function Room 2', type: 'technical', dayName: 'Fri', speakerId: 'S3' },
+            { id: 503, dateStr: '2025-11-28', day: 28, startH: 13, startM: 0, endH: 15, endM: 0, timeDisplay: '1:00 PM - 3:00 PM', title: 'Technical Sessions (PM)', venue: 'Function Rooms 1-3', type: 'technical', dayName: 'Fri' },
+            { id: 504, dateStr: '2025-11-28', day: 28, startH: 15, startM: 0, endH: 18, endM: 0, timeDisplay: '3:00 PM - 6:00 PM', title: 'General Membership Meeting', venue: 'Function Rooms 1-3', type: 'plenary', dayName: 'Fri', speakerId: 'S1' },
             
-            { id: 502, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Power System Ops, Maint & Protection', venue: 'Function Room 2', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. Christian L. Agustin (Utility Side Protection), Dr. Bhaba Das (Transformer Monitoring), Dir. Andrew Mui (Lightning Protection)' },
-            
-            { id: 503, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Electrical System Design & Project Mgmt', venue: 'Function Room 3', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. George D. Esteban (Proj Mgmt), Engr. Orville R. Singson (High Rise Design), Engr. Allan Jay L. Baco (Smart Grid GIS)' },
-            
-            { id: 504, dateStr: '2025-11-28', day: 28, startH: 9, startM: 30, endH: 12, endM: 0, timeDisplay: '9:30 AM - 12:00 NN', title: 'FORUM: Renewable Energy Integration', venue: 'Function Room 4', type: 'forum', dayName: 'Fri', description: 'Speakers: Mr. Erel Narida (Keynote), Ms. Chester Ann Yap, Ms. Joyce Anne Asilo, Mr. Nilo A. Apuada' },
-            
-            { id: 505, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'R&D Forum and EE Research Contest', venue: 'Meeting Room 4, 5, 6', type: 'competition', dayName: 'Fri' },
-            
-            { id: 506, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Young Professionals Forum on Standardization', venue: 'Philflex Bay Center', type: 'forum', dayName: 'Fri' },
-
-            // Nov 29 (Saturday) - UPDATED
-            { id: 601, dateStr: '2025-11-29', day: 29, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: Power System Ops & Protection', venue: 'Function Room 2', type: 'technical', dayName: 'Sat', description: 'AM Speakers (8-12): Engr. Rolly P. Clamor (Smart Automation), Engr. Ramon L. Asaña (Smart Grid)' },
-
-            { id: 602, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 11, endM: 30, timeDisplay: '8:30 AM - 11:30 AM', title: 'Registered Master Electrician (RME) Forum', venue: 'Function Room 3', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Arthur N. Escalante, Engr. Florencio D. Berenguel, Engr. Christopher T. Bellaflor, Engr. Riz T. Bautista, Hon. Francis V. Mapile' },
-
-            { id: 603, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 10, endM: 30, timeDisplay: '8:30 AM - 10:30 AM', title: 'FORUM: AI Innovation & Industry Transformation', venue: 'Function Room 4', type: 'forum', dayName: 'Sat', description: 'Speakers: Mr. Jo Cops (Keynote), Ms. Catherine Jalandoni (Keynote), Dr. Michael Pacis, Mr. Min Chih Tsai' },
-            
-            { id: 604, dateStr: '2025-11-29', day: 29, startH: 10, startM: 30, endH: 12, endM: 0, timeDisplay: '10:30 AM - 12:00 PM', title: 'FORUM: Power Utilities & Sustainable Growth', venue: 'Function Room 4', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Ronnie L. Aperocho (Keynote), Engr. Giovanni Randolfo A. Galang, Mr. Patrick Aquino, Engr. Ferdinand P. Villareal' },
-
-            { id: 605, dateStr: '2025-11-29', day: 29, startH: 13, startM: 0, endH: 15, endM: 0, timeDisplay: '1:00 PM - 3:00 PM', title: 'Tech Session: Financial Success & Offshore Wind', venue: 'Function Room 1-4', type: 'technical', dayName: 'Sat', description: 'Speakers: Dr. Rowena De Guzman (Financial Success), Hon. Fortunato C. Leynes (Offshore Wind Challenges)' },
-            
-            { id: 606, dateStr: '2025-11-29', day: 29, startH: 16, startM: 30, endH: 20, endM: 0, timeDisplay: '4:30 PM - 8:00 PM', title: 'Closing Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Sat' },
-            
-            { id: 607, dateStr: '2025-11-29', day: 29, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'AAPER Forum: Energized Regional Growth', venue: 'Meeting Room 7-8', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Sheila C. Cabaraban (Guest), Ir. Simon Yeong Chin Chow, Engr. Federico A. Monsada, Engr. Romulo R. Agatep, Engr. Nelson S. Andres, Dr. Edison E. Mojica, Dr. Romano Q. Neyra' },
+            // Nov 29 (Saturday)
+            { id: 601, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Career Mentoring', venue: 'Function Room 1', type: 'student', dayName: 'Sat' },
+            { id: 604, dateStr: '2025-11-29', day: 29, startH: 16, startM: 30, endH: 20, endM: 0, timeDisplay: '4:30 PM - 8:00 PM', title: 'Closing Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Sat', speakerId: 'S1' },
         ];
 
         const venueData = [
@@ -238,12 +267,10 @@
                     osc.connect(gain);
                     gain.connect(ctx.destination);
 
-                    // Super Mario Coin Sound Structure: B5 (988Hz) -> E6 (1319Hz)
                     osc.type = 'square';
                     osc.frequency.setValueAtTime(988, ctx.currentTime);
                     osc.frequency.setValueAtTime(1319, ctx.currentTime + 0.08);
 
-                    // Envelope
                     gain.gain.setValueAtTime(0.05, ctx.currentTime);
                     gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
 
@@ -259,43 +286,26 @@
                 setHasStarted(true);
                 setIsAnimating(true);
                 playCoinSound();
-
-                // Wait for animation then complete
-                setTimeout(() => {
-                    onComplete();
-                }, 1500); 
+                setTimeout(() => { onComplete(); }, 1500); 
             };
 
             return (
-                <div 
-                    onClick={handleStart}
-                    className="fixed inset-0 z-[100] bg-blue-900 flex flex-col items-center justify-center overflow-hidden cursor-pointer"
-                >
+                <div onClick={handleStart} className="fixed inset-0 z-[100] bg-blue-900 flex flex-col items-center justify-center overflow-hidden cursor-pointer">
                     <div className="relative flex flex-col items-center justify-end h-64 w-full mb-8">
-                        
-                        {/* THE COIN */}
                         {isAnimating && (
-                            <div className="absolute w-12 h-12 bg-yellow-400 rounded-full border-4 border-yellow-200 flex items-center justify-center shadow-lg anim-coin z-10">
-                                <span className="mario-font text-yellow-700 font-bold text-xs">50</span>
-                            </div>
+                            <>
+                                <div className="absolute w-12 h-12 bg-yellow-400 rounded-full border-4 border-yellow-200 flex items-center justify-center shadow-lg anim-coin z-10">
+                                    <span className="mario-font text-yellow-700 font-bold text-xs">50</span>
+                                </div>
+                                <div className="absolute mario-font text-white text-sm anim-score z-20">50th</div>
+                            </>
                         )}
-                        
-                        {/* SCORE TEXT */}
-                        {isAnimating && (
-                            <div className="absolute mario-font text-white text-sm anim-score z-20">
-                                50th
-                            </div>
-                        )}
-
-                        {/* QUESTION BLOCK */}
                         <div className={`w-16 h-16 bg-yellow-500 rounded-lg border-b-4 border-r-4 border-yellow-700 relative z-0 flex items-center justify-center pixel-corners shadow-xl ${isAnimating ? 'anim-block' : 'animate-bounce'}`}>
                             <div className="absolute top-1 left-1 w-2 h-2 bg-yellow-200 rounded-full opacity-50"></div>
                             <span className="mario-font text-yellow-800 text-3xl font-bold">?</span>
                             <div className="absolute inset-0 border-2 border-yellow-600 opacity-20 rounded-lg"></div>
                         </div>
-
                     </div>
-                    
                     <div className={`text-center transition-opacity duration-500 ${isAnimating ? 'opacity-0' : 'opacity-100'}`}>
                         <h1 className="text-white text-2xl font-bold mb-2">IIEE 50th</h1>
                         <p className="text-yellow-300 text-xs tracking-widest mario-font animate-pulse">TAP TO START</p>
@@ -307,13 +317,8 @@
         function App() {
             const [isLoading, setIsLoading] = useState(true);
             const [view, setView] = useState('schedule');
-            
-            // UPDATED: Default to 'NOW' to show current events immediately
-            const [subTab, setSubTab] = useState('NOW');
-            
-            // UPDATED: Set simulation time to Nov 24, 2025 (Monday) at 9:00 AM
-            const [simTime, setSimTime] = useState(new Date(2025, 10, 24, 9, 0));
-            
+            const [subTab, setSubTab] = useState('ALL');
+            const [simTime, setSimTime] = useState(new Date(2025, 10, 28, 9, 0));
             const [searchQuery, setSearchQuery] = useState('');
             
             // Calendar State
@@ -338,6 +343,10 @@
             const [tempNoteText, setTempNoteText] = useState('');
             const noteInputRef = useRef(null);
 
+            // --- SPEAKER MODAL STATE ---
+            const [showSpeakerModal, setShowSpeakerModal] = useState(false);
+            const [activeSpeaker, setActiveSpeaker] = useState(null);
+
             const toggleAgenda = (id) => {
                 if (myAgenda.includes(id)) {
                     setMyAgenda(myAgenda.filter(itemId => itemId !== id));
@@ -346,7 +355,7 @@
                 }
             };
 
-            // --- NOTE HANDLERS ---
+            // --- HANDLERS ---
             const openNoteModal = (e, eventId) => {
                 e.stopPropagation();
                 setActiveNoteId(eventId);
@@ -364,6 +373,15 @@
                     return next;
                 });
                 setShowNoteModal(false);
+            };
+
+            const openSpeakerModal = (e, speakerId) => {
+                e.stopPropagation();
+                const spk = speakerDB[speakerId];
+                if(spk) {
+                    setActiveSpeaker(spk);
+                    setShowSpeakerModal(true);
+                }
             };
 
             // --- TIME SIMULATION ---
@@ -389,7 +407,7 @@
                 return `${formattedHours}:${formattedMinutes} ${ampm} (${getOrdinal(day)})`;
             };
 
-            // --- FILTER LOGIC (Main Schedule) ---
+            // --- FILTER LOGIC ---
             const filteredEvents = useMemo(() => {
                 let events = scheduleData.filter(e => 
                     e.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -422,6 +440,8 @@
 
             const renderEventCard = (event) => {
                 const hasNote = !!myNotes[event.id];
+                const speaker = event.speakerId ? speakerDB[event.speakerId] : null;
+
                 return (
                     <div key={event.id} className="bg-white rounded-lg p-4 shadow-sm mb-3 event-card relative animate-fade-in">
                         <div className="pr-8">
@@ -429,22 +449,22 @@
                                 {event.timeDisplay}
                             </div>
                             <h3 className="text-lg font-bold text-gray-800 leading-tight mb-2">{event.title}</h3>
-                            
-                            {/* NEW: Description field for speakers/topics */}
-                            {event.description && (
-                                <div className="text-xs text-gray-600 mb-2 italic border-l-2 border-gray-200 pl-2">
-                                    {event.description}
-                                </div>
-                            )}
-
                             <div className="flex items-center text-gray-500 text-sm mb-1">
                                 <i className="fas fa-map-marker-alt w-4 text-center mr-2 text-gray-400"></i>
                                 {event.venue}
                             </div>
-                            <div className="flex items-center text-gray-500 text-sm mb-3">
+                            <div className="flex items-center text-gray-500 text-sm mb-2">
                                 <i className="fas fa-calendar-day w-4 text-center mr-2 text-gray-400"></i>
                                 {event.dayName}, Nov {event.day}
                             </div>
+
+                            {/* Speaker Link */}
+                            {speaker && (
+                                <div onClick={(e) => openSpeakerModal(e, event.speakerId)} className="inline-flex items-center bg-blue-50 text-blue-700 px-2 py-1 rounded text-xs font-semibold mb-3 cursor-pointer hover:bg-blue-100 transition">
+                                    <i className="fas fa-user-tie mr-1.5"></i>
+                                    Speaker: {speaker.name}
+                                </div>
+                            )}
                             
                             {hasNote && (
                                 <div onClick={(e) => openNoteModal(e, event.id)} className="mb-3 bg-yellow-50 border border-yellow-200 p-2 rounded text-sm text-gray-700 italic cursor-pointer hover:bg-yellow-100 transition">
@@ -453,7 +473,7 @@
                                 </div>
                             )}
 
-                            <div className="flex gap-3">
+                            <div className="flex gap-3 mt-1">
                                 <button onClick={(e) => openNoteModal(e, event.id)} className={`flex-1 py-2 rounded-lg text-sm font-semibold transition flex items-center justify-center ${hasNote ? 'bg-blue-100 text-blue-700 hover:bg-blue-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
                                     <i className={`${hasNote ? 'fas' : 'fas'} fa-pen-nib mr-2 text-xs`}></i> 
                                     {hasNote ? 'Edit Note' : 'Note'}
@@ -472,19 +492,9 @@
 
             // --- CALENDAR RENDERER ---
             const CalendarContent = () => {
-                // Calendar Setup for Nov 2025
-                const year = 2025;
-                const month = 10; // Nov
-                const daysInMonth = 30;
-                const firstDayIndex = 6; // Nov 1 2025 is Saturday
-
-                const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
-                const blanks = Array.from({ length: firstDayIndex }, (_, i) => i);
-                
-                // Events for the selected day in Calendar View
+                const days = Array.from({ length: 30 }, (_, i) => i + 1);
+                const blanks = Array.from({ length: 6 }, (_, i) => i);
                 const selectedDayEvents = scheduleData.filter(e => e.dateStr === calSelectedDateStr).sort((a,b) => a.startH - b.startH);
-
-                // Helper to check if a specific day has events
                 const hasEvents = (day) => {
                     const dStr = `2025-11-${day < 10 ? '0' + day : day}`;
                     return scheduleData.some(e => e.dateStr === dStr);
@@ -496,17 +506,12 @@
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="font-bold text-xl text-blue-900">November 2025</h2>
                                 <div className="text-gray-400 text-sm">
-                                    <i className="fas fa-chevron-left mr-3"></i>
-                                    <i className="fas fa-chevron-right"></i>
+                                    <i className="fas fa-chevron-left mr-3"></i><i className="fas fa-chevron-right ml-3"></i>
                                 </div>
                             </div>
-
-                            {/* Weekday Headers */}
                             <div className="grid grid-cols-7 mb-2 text-center text-xs font-bold text-gray-400 uppercase">
                                 <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
                             </div>
-
-                            {/* Days Grid */}
                             <div className="calendar-grid">
                                 {blanks.map((_, i) => <div key={`blank-${i}`} className="calendar-day"></div>)}
                                 {days.map(day => {
@@ -514,13 +519,8 @@
                                     const isSelected = calSelectedDateStr === dateStr;
                                     const isToday = simTime.getDate() === day && simTime.getMonth() === 10;
                                     const eventDot = hasEvents(day);
-
                                     return (
-                                        <div 
-                                            key={day} 
-                                            onClick={() => setCalSelectedDateStr(dateStr)}
-                                            className={`calendar-day cursor-pointer transition-colors ${isSelected ? 'bg-yellow-400 text-blue-900 font-bold shadow-md' : 'hover:bg-gray-100 text-gray-700'} ${isToday && !isSelected ? 'border-2 border-blue-500' : ''}`}
-                                        >
+                                        <div key={day} onClick={() => setCalSelectedDateStr(dateStr)} className={`calendar-day cursor-pointer transition-colors ${isSelected ? 'bg-yellow-400 text-blue-900 font-bold shadow-md' : 'hover:bg-gray-100 text-gray-700'} ${isToday && !isSelected ? 'border-2 border-blue-500' : ''}`}>
                                             <span>{day}</span>
                                             {eventDot && !isSelected && <div className="calendar-dot"></div>}
                                         </div>
@@ -528,20 +528,14 @@
                                 })}
                             </div>
                         </div>
-
-                        {/* Selected Day Events List */}
                         <div className="mb-2 flex items-center justify-between px-1">
                             <h3 className="font-bold text-gray-700">Events for Nov {calSelectedDateStr.split('-')[2]}</h3>
                             <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded-full">{selectedDayEvents.length} Events</span>
                         </div>
-
                         <div className="space-y-1">
-                            {selectedDayEvents.length > 0 ? (
-                                selectedDayEvents.map(renderEventCard)
-                            ) : (
+                            {selectedDayEvents.length > 0 ? selectedDayEvents.map(renderEventCard) : (
                                 <div className="text-center py-10 text-gray-400 bg-white rounded-lg border border-dashed border-gray-300">
-                                    <i className="far fa-calendar-minus text-4xl mb-2 text-gray-200"></i>
-                                    <p>No events scheduled for this day.</p>
+                                    <i className="far fa-calendar-minus text-4xl mb-2 text-gray-200"></i><p>No events scheduled.</p>
                                 </div>
                             )}
                         </div>
@@ -551,6 +545,17 @@
 
             const MenuContent = () => (
                 <div className="animate-fade-in space-y-4">
+                    <div className="bg-white p-4 rounded-lg shadow-sm">
+                        <h3 className="font-bold text-gray-800 mb-2">Convention Guide</h3>
+                        <div onClick={() => setView('speakers')} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg cursor-pointer hover:bg-blue-100 mb-2">
+                             <div className="flex items-center text-blue-800 font-bold">
+                                 <div className="w-8 h-8 rounded-full bg-blue-200 flex items-center justify-center mr-3"><i className="fas fa-users"></i></div>
+                                 Speaker Directory
+                             </div>
+                             <i className="fas fa-chevron-right text-blue-300"></i>
+                        </div>
+                    </div>
+
                     <div className="bg-white p-4 rounded-lg shadow-sm">
                         <h3 className="font-bold text-gray-800 mb-2">Venue Guide</h3>
                         {venueData.map((cat, i) => (
@@ -573,37 +578,23 @@
                     <div className="bg-white p-4 rounded-lg shadow-sm">
                         <h3 className="font-bold text-gray-800 mb-2">My Data</h3>
                         <div className="space-y-2">
-                             <div className="flex justify-between p-2 bg-gray-50 rounded">
-                                <span>Saved Notes</span>
-                                <span className="font-bold text-blue-600">{Object.keys(myNotes).length}</span>
-                             </div>
-                             <div className="flex justify-between p-2 bg-gray-50 rounded">
-                                <span>Agenda Items</span>
-                                <span className="font-bold text-blue-600">{myAgenda.length}</span>
-                             </div>
+                             <div className="flex justify-between p-2 bg-gray-50 rounded"><span>Saved Notes</span><span className="font-bold text-blue-600">{Object.keys(myNotes).length}</span></div>
+                             <div className="flex justify-between p-2 bg-gray-50 rounded"><span>Agenda Items</span><span className="font-bold text-blue-600">{myAgenda.length}</span></div>
                         </div>
                     </div>
                 </div>
             );
 
-            // New View Component: All Notes
             const NotesListView = () => {
                 const noteIds = Object.keys(myNotes);
-                
-                // Helper to get event details
                 const getEvent = (id) => scheduleData.find(e => e.id.toString() === id.toString());
-
                 return (
                     <div className="animate-fade-in space-y-4">
                          <h2 className="font-bold text-2xl text-blue-900 mb-2 px-1">My Notes</h2>
-                         
                          {noteIds.length === 0 ? (
                             <div className="text-center py-16 text-gray-400 bg-white rounded-xl shadow-sm border border-dashed border-gray-200">
-                                <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                                    <i className="fas fa-pen-nib text-2xl text-yellow-600"></i>
-                                </div>
-                                <h3 className="text-gray-600 font-bold mb-1">No Notes Yet</h3>
-                                <p className="text-sm px-8">Tap the "Note" button on any scheduled event to write your takeaways here.</p>
+                                <div className="bg-yellow-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"><i className="fas fa-pen-nib text-2xl text-yellow-600"></i></div>
+                                <h3 className="text-gray-600 font-bold mb-1">No Notes Yet</h3><p className="text-sm px-8">Tap "Note" on any event.</p>
                             </div>
                          ) : (
                              <div className="space-y-3">
@@ -616,12 +607,8 @@
                                                 <h3 className="font-bold text-gray-800 text-sm">{event.title}</h3>
                                                 <span className="text-xs text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{event.dayName}</span>
                                             </div>
-                                            <div className="text-gray-600 text-sm italic bg-yellow-50 p-3 rounded-lg border border-yellow-100">
-                                                "{myNotes[id]}"
-                                            </div>
-                                            <div className="mt-2 text-right">
-                                                <span className="text-xs font-bold text-blue-600">Tap to edit</span>
-                                            </div>
+                                            <div className="text-gray-600 text-sm italic bg-yellow-50 p-3 rounded-lg border border-yellow-100">"{myNotes[id]}"</div>
+                                            <div className="mt-2 text-right"><span className="text-xs font-bold text-blue-600">Tap to edit</span></div>
                                         </div>
                                     );
                                 })}
@@ -629,6 +616,32 @@
                          )}
                     </div>
                 );
+            };
+
+            // NEW: Speaker Directory View
+            const SpeakersListView = () => {
+                return (
+                    <div className="animate-fade-in space-y-4">
+                        <div className="flex items-center mb-4">
+                            <button onClick={() => setView('menu')} className="mr-3 text-blue-600"><i className="fas fa-arrow-left"></i></button>
+                            <h2 className="font-bold text-2xl text-blue-900">Speaker Directory</h2>
+                        </div>
+                        <div className="grid grid-cols-1 gap-3">
+                            {Object.values(speakerDB).map(spk => (
+                                <div key={spk.id} onClick={(e) => openSpeakerModal(e, spk.id)} className="bg-white p-4 rounded-xl shadow-sm flex items-center cursor-pointer hover:bg-gray-50 active:scale-95 transition-transform">
+                                    <div className="speaker-avatar mr-4 shrink-0">
+                                        <span className="font-bold">{spk.name.split(' ')[1][0]}{spk.name.split(' ').pop()[0]}</span>
+                                    </div>
+                                    <div>
+                                        <h3 className="font-bold text-gray-800 text-sm">{spk.name}</h3>
+                                        <div className="text-xs text-blue-600 font-medium mb-1">{spk.creds}</div>
+                                        <div className="text-xs text-gray-500">{spk.role}</div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )
             };
 
             const ScheduleContent = () => (
@@ -639,8 +652,7 @@
                     </div>
                     {filteredEvents.length === 0 && (
                         <div className="text-center py-16 text-gray-400">
-                            <i className="far fa-calendar-times text-5xl mb-4 text-gray-200"></i>
-                            <p>No events found.</p>
+                            <i className="far fa-calendar-times text-5xl mb-4 text-gray-200"></i><p>No events found.</p>
                             {subTab === 'NOW' && <p className="text-xs mt-2">Try adjusting the simulator time above.</p>}
                         </div>
                     )}
@@ -648,14 +660,12 @@
                 </div>
             );
 
-            // --- SPLASH SCREEN CHECK ---
             if (isLoading) {
                 return <SplashScreen onComplete={() => setIsLoading(false)} />;
             }
 
             return (
                 <div className="app-container flex flex-col">
-                    {/* TOP BAR: DEV INFO */}
                     <div className="top-dev-bar py-1.5 px-4 flex flex-col justify-center items-center text-center leading-tight">
                         <div className="font-medium">Developed by Engr. Franz Xyrlo I. Tobias, PEE</div>
                         <div className="flex items-center mt-0.5"><i className="fas fa-phone-alt text-[0.6rem] mr-1"></i> 0936 923 8834</div>
@@ -665,17 +675,11 @@
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex items-center gap-3">
                                 <div className="w-12 h-12 rounded-full bg-yellow-400 flex items-center justify-center text-blue-900 font-bold border-2 border-white text-xl shadow-md">50</div>
-                                <div>
-                                    <h1 className="font-bold text-xl leading-none">IIEE Convention</h1>
-                                    <p className="text-xs text-blue-200 mt-1">Nov 24-29, 2025 • SMX</p>
-                                </div>
+                                <div><h1 className="font-bold text-xl leading-none">IIEE Convention</h1><p className="text-xs text-blue-200 mt-1">Nov 24-29, 2025 • SMX</p></div>
                             </div>
-                            <button className="text-white text-2xl"><i className="fas fa-bars"></i></button>
                         </div>
                         <div className="sim-time-bar rounded-lg p-2 mb-4 flex justify-between items-center shadow-inner">
-                            <div className="text-yellow-300 font-mono font-bold text-sm flex items-center">
-                                <i className="far fa-clock mr-2 text-white"></i> {formatSimTime(simTime)}
-                            </div>
+                            <div className="text-yellow-300 font-mono font-bold text-sm flex items-center"><i className="far fa-clock mr-2 text-white"></i> {formatSimTime(simTime)}</div>
                             <div className="flex gap-1">
                                 <button onClick={() => adjustTime(-1, 'D')} className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20">-1D</button>
                                 <button onClick={() => adjustTime(-1, 'H')} className="px-2 py-1 bg-white/10 rounded text-xs hover:bg-white/20">-1H</button>
@@ -686,9 +690,7 @@
                         {view === 'schedule' && (
                             <div className="flex text-sm font-medium pt-1">
                                 {['ALL', 'NOW', 'SOON', 'MY AGENDA'].map(tab => (
-                                    <button key={tab} onClick={() => setSubTab(tab)} className={`mr-6 pb-3 transition-colors ${subTab === tab ? 'tab-active' : 'tab-inactive'}`}>
-                                        {tab}
-                                    </button>
+                                    <button key={tab} onClick={() => setSubTab(tab)} className={`mr-6 pb-3 transition-colors ${subTab === tab ? 'tab-active' : 'tab-inactive'}`}>{tab}</button>
                                 ))}
                             </div>
                         )}
@@ -699,14 +701,40 @@
                         {view === 'menu' && <MenuContent />}
                         {view === 'calendar' && <CalendarContent />}
                         {view === 'notes' && <NotesListView />}
+                        {view === 'speakers' && <SpeakersListView />}
                         {view === 'cpd' && (
-                            <div className="flex flex-col items-center justify-center h-64 text-gray-400">
-                                <i className="fas fa-certificate text-6xl mb-4 text-gray-300"></i>
-                                <p>CPD Tracker</p>
-                            </div>
+                            <div className="flex flex-col items-center justify-center h-64 text-gray-400"><i className="fas fa-certificate text-6xl mb-4 text-gray-300"></i><p>CPD Tracker</p></div>
                         )}
                     </main>
 
+                    {/* SPEAKER MODAL */}
+                    {showSpeakerModal && activeSpeaker && (
+                        <div className="fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowSpeakerModal(false)}>
+                            <div className="bg-white w-full max-w-sm rounded-xl overflow-hidden shadow-2xl" onClick={e => e.stopPropagation()}>
+                                <div className="bg-blue-900 p-6 flex flex-col items-center text-center relative">
+                                    <button onClick={() => setShowSpeakerModal(false)} className="absolute top-4 right-4 text-white/50 hover:text-white"><i className="fas fa-times text-xl"></i></button>
+                                    <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center text-2xl font-bold text-blue-900 border-4 border-blue-200 shadow-lg mb-3">
+                                        {activeSpeaker.name.split(' ')[1][0]}{activeSpeaker.name.split(' ').pop()[0]}
+                                    </div>
+                                    <h3 className="text-white font-bold text-lg leading-tight mb-1">{activeSpeaker.name}</h3>
+                                    <span className="bg-yellow-400 text-blue-900 text-xs font-bold px-2 py-0.5 rounded-full">{activeSpeaker.creds}</span>
+                                </div>
+                                <div className="p-6">
+                                    <div className="mb-4">
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wide">Role</label>
+                                        <p className="text-gray-800 font-medium">{activeSpeaker.role}</p>
+                                    </div>
+                                    <div>
+                                        <label className="text-xs font-bold text-gray-400 uppercase tracking-wide">Biography</label>
+                                        <p className="text-sm text-gray-600 leading-relaxed mt-1">{activeSpeaker.bio}</p>
+                                    </div>
+                                    <button onClick={() => setShowSpeakerModal(false)} className="w-full mt-6 bg-gray-100 text-gray-600 py-2 rounded-lg font-bold hover:bg-gray-200">Close</button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* NOTE MODAL */}
                     {showNoteModal && (
                         <div className="fixed inset-0 z-[60] modal-backdrop flex items-center justify-center p-4 animate-fade-in" onClick={() => setShowNoteModal(false)}>
                             <div className="bg-white w-full max-w-sm rounded-xl p-5 shadow-2xl transform transition-all" onClick={e => e.stopPropagation()}>
@@ -733,10 +761,7 @@
                             <i className="far fa-calendar text-xl mb-1"></i><span className="text-[10px] font-medium">Calendar</span>
                         </button>
                         <div className="relative -top-6">
-                            <button 
-                                onClick={() => setView('notes')}
-                                className={`w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg border-4 border-gray-50 text-blue-900 transform transition-transform active:scale-95 ${view === 'notes' ? 'ring-4 ring-blue-100' : ''}`}
-                            >
+                            <button onClick={() => setView('notes')} className={`w-14 h-14 rounded-full bg-yellow-400 flex items-center justify-center shadow-lg border-4 border-gray-50 text-blue-900 transform transition-transform active:scale-95 ${view === 'notes' ? 'ring-4 ring-blue-100' : ''}`}>
                                 <i className="fas fa-pen-nib text-xl"></i>
                             </button>
                         </div>
