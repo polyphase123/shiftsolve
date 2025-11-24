@@ -141,39 +141,64 @@
         const createDate = (day, hour, minute) => new Date(2025, 10, day, hour, minute);
 
         const scheduleData = [
-            // Nov 24 (Monday)
+            // Nov 24 (Monday) - UPDATED
             { id: 101, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Mon' },
-            { id: 102, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Skills Olympics', venue: 'Function Room 3', type: 'competition', dayName: 'Mon' },
-            { id: 103, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Standards Committee', venue: 'Meeting Rooms 7 & 8', type: 'meeting', dayName: 'Mon' },
+            { id: 102, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Registered Master Electrician Skills Olympics', venue: 'Function Room 3', type: 'competition', dayName: 'Mon' },
+            { id: 103, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Standards Committee Forum: Powering the Energy Transition', venue: 'Meeting Rooms 7 & 8', type: 'meeting', dayName: 'Mon', description: 'Speakers: Dir. Neil P. Catajay, Engr. Ferdinand B. Binondo, Engr. Jayson G. Corpuz, Engr. Rey Kindar V. Cale, Engr. Raul C. Balogal, Engr. Charles L. Singson, Engr. Laurenne E. Dungca, Mr. Colin Steley, Mr. Paul Loke, Ms. Sherry He, Engr. Tristan Daniel C. Zabala, Engr. Ronmar Gonzales, Engr. Conrado C. Binondo' },
             { id: 104, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Releasing of Kits', venue: 'Meeting Rooms 4, 5 & 6', type: 'admin', dayName: 'Mon' },
             { id: 105, dateStr: '2025-11-24', day: 24, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Basketball', venue: 'Koten Gym, Pasay City', type: 'sports', dayName: 'Mon' },
 
-            // Nov 25 (Tuesday)
+            // Nov 25 (Tuesday) - UPDATED
             { id: 201, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Tue' },
-            { id: 202, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Mega Webinar', venue: 'Function Room 3', type: 'technical', dayName: 'Tue' },
-            { id: 203, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'PEC Activities', venue: 'Meeting Rooms 7 & 8', type: 'technical', dayName: 'Tue' },
-            { id: 204, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Technical Sessions', venue: 'Meeting Rooms 4, 5 & 6', type: 'technical', dayName: 'Tue' },
+            { id: 202, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: Technology Trends in EE (Present & Future)', venue: 'Function Room 3', type: 'technical', dayName: 'Tue', description: 'Speakers: Fsinsp Darwin D. Orsolino (BFP), Atty. April Domingo (Suppliers), Engr. Adrian L. Ley (Hybrid Power), Engr. Patrick Sean Pineda (Safety), Dr. Juergen Unfried (Energy Efficiency), Mr. Nabaroon Goswami (Lightning Protection)' },
+            { id: 203, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Towards Harmonized Electrical Practices (PEC 1 & 2)', venue: 'Function Room 7 & 8', type: 'technical', dayName: 'Tue', description: 'Speakers: Engr. Generoso G. Restubog (IIEE Guidelines), Engr. Reynaldo R. Santiago (PEC 10th Ed Updates), Engr. Jeffrey I. Calderon (Grid Forming Inverters)' },
+            { id: 204, dateStr: '2025-11-25', day: 25, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: EE Education, Research & Safety', venue: 'Meeting Rooms 4, 5 & 6', type: 'technical', dayName: 'Tue', description: 'Speakers: Dr. Romano Q. Neyra (Safety Framework), Engr. Ryan Anthony K. Umali (Design Classified Loc), Engr. Erwin J. Salvador (Academia-Industry Gap), Engr. Analyn C. Fernandez (HIRAC)' },
 
             // Nov 26 (Wednesday)
             { id: 301, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: "Students' Activities", venue: 'Function Rooms 1-2', type: 'student', dayName: 'Wed' },
-            { id: 302, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Mega Webinar', venue: 'Function Room 3', type: 'technical', dayName: 'Wed' },
+            { id: 302, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Technology Trends in Electrical Engineering', venue: 'Function Room 3', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. Michael M. Evangelista (Transformer Insulation), Engr. Rodolfo Penalosa (Electro-Mechanical Systems Energy Efficiency)' },
+            { id: 303, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Technical Sessions', venue: 'Meeting Room 7 & 8', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. Inigo V. Escopete Jr. (Thermal Imaging), Engr. Ray Anthony V. Rodriguez (AI for Electricians), Engr. Marvin A. Radaza (Motor Control), Engr. Roel M. Bebero (Solar PV), Engr. Armando R. Diaz (Grounding)' },
+            { id: 304, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Electrical Safety Conference', venue: 'Meeting Room 4-6', type: 'technical', dayName: 'Wed', description: 'Speakers: Engr. J.M. Batino, Engr. A.R. Herrera Jr., Engr. C.T. Caidic, Engr. A.C. Fernandez (OSH Law), Engr. E.C. Mejia (EV Fire Safety), Engr. L.E. Dungca (Transformers), Engr. V.C. Abejero, Engr. A.F. Gumboc, Mr. S. Mohamed, Engr. J.P.M. Tolentino' },
             { id: 307, dateStr: '2025-11-26', day: 26, startH: 8, startM: 0, endH: 18, endM: 0, timeDisplay: '8:00 AM - 6:00 PM', title: 'IIEE WEN Forum', venue: 'Exhibit Area', type: 'forum', dayName: 'Wed' },
 
             // Nov 27 (Thursday)
             { id: 401, dateStr: '2025-11-27', day: 27, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'RME Forum', venue: 'Meeting Room 7-8', type: 'forum', dayName: 'Thu' },
             { id: 402, dateStr: '2025-11-27', day: 27, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Safety Conference', venue: 'Meeting Room 4, 5 & 6', type: 'technical', dayName: 'Thu' },
             { id: 404, dateStr: '2025-11-27', day: 27, startH: 8, startM: 30, endH: 11, endM: 30, timeDisplay: '8:30 AM - 11:30 AM', title: 'Opening Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Thu' },
-            { id: 405, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 16, endM: 30, timeDisplay: '1:30 PM - 4:30 PM', title: 'Simultaneous Tech Sessions', venue: 'Function Rooms 1-4', type: 'technical', dayName: 'Thu' },
+            
+            // Nov 27 PM Split
+            { id: 405, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Power System Planning', venue: 'Function Room 1', type: 'technical', dayName: 'Thu', description: 'Speakers: Engr. Emiere Daplin Lingatog (Load Forecasting), Engr. Anderson S. Ongspying (Customer Choice Program)' },
+            { id: 406, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Power System Ops & Control', venue: 'Function Room 2', type: 'technical', dayName: 'Thu', description: 'Speakers: Hon. Jaime V. Mendoza (Power Line Corridor), Engr. Roel B. Calano (Principle of Least Action in Generation)' },
+            { id: 407, dateStr: '2025-11-27', day: 27, startH: 13, startM: 30, endH: 17, endM: 0, timeDisplay: '1:30 PM - 5:00 PM', title: 'Tech Session: Electrical System Design', venue: 'Function Room 3', type: 'technical', dayName: 'Thu', description: 'Speaker: Hon. Francis V. Mapile (BEE Res No. 14 - Career Progression for Adv. EE Level 8)' },
+            { id: 408, dateStr: '2025-11-27', day: 27, startH: 13, startM: 0, endH: 17, endM: 0, timeDisplay: '1:00 PM - 5:00 PM', title: 'FORUM: Bridging Local & Int\'l Standards', venue: 'Function Room 4', type: 'forum', dayName: 'Thu', description: 'Speakers: Mr. Jo Cops (Keynote), Dir. Neil P. Catajay, Mr. Damien Lee, Dr. George Borlase, Mr. Kolin Low' },
 
             // Nov 28 (Friday)
-            { id: 501, dateStr: '2025-11-28', day: 28, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Tech Session: Renewable Energy', venue: 'Function Room 1', type: 'technical', dayName: 'Fri' },
-            { id: 502, dateStr: '2025-11-28', day: 28, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Tech Session: Grid Modernization', venue: 'Function Room 2', type: 'technical', dayName: 'Fri' },
-            { id: 503, dateStr: '2025-11-28', day: 28, startH: 13, startM: 0, endH: 15, endM: 0, timeDisplay: '1:00 PM - 3:00 PM', title: 'Technical Sessions (PM)', venue: 'Function Rooms 1-3', type: 'technical', dayName: 'Fri' },
-            { id: 504, dateStr: '2025-11-28', day: 28, startH: 15, startM: 0, endH: 18, endM: 0, timeDisplay: '3:00 PM - 6:00 PM', title: 'General Membership Meeting', venue: 'Function Rooms 1-3', type: 'plenary', dayName: 'Fri' },
+            { id: 501, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Power System Planning & Electricity Market', venue: 'Function Room 1', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. Jerome M. Peralta (Embedded Generation Protection), Engr. Frederick R. Calamlam (Iberian Blackout), Engr. Amelia L. Cumpas (High Voltage Metering)' },
             
-            // Nov 29 (Saturday)
-            { id: 601, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 12, endM: 0, timeDisplay: '8:30 AM - 12:00 NN', title: 'Career Mentoring', venue: 'Function Room 1', type: 'student', dayName: 'Sat' },
-            { id: 604, dateStr: '2025-11-29', day: 29, startH: 16, startM: 30, endH: 20, endM: 0, timeDisplay: '4:30 PM - 8:00 PM', title: 'Closing Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Sat' },
+            { id: 502, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Power System Ops, Maint & Protection', venue: 'Function Room 2', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. Christian L. Agustin (Utility Side Protection), Dr. Bhaba Das (Transformer Monitoring), Dir. Andrew Mui (Lightning Protection)' },
+            
+            { id: 503, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 15, endM: 0, timeDisplay: '8:00 AM - 3:00 PM', title: 'Tech Session: Electrical System Design & Project Mgmt', venue: 'Function Room 3', type: 'technical', dayName: 'Fri', description: 'Speakers: Engr. George D. Esteban (Proj Mgmt), Engr. Orville R. Singson (High Rise Design), Engr. Allan Jay L. Baco (Smart Grid GIS)' },
+            
+            { id: 504, dateStr: '2025-11-28', day: 28, startH: 9, startM: 30, endH: 12, endM: 0, timeDisplay: '9:30 AM - 12:00 NN', title: 'FORUM: Renewable Energy Integration', venue: 'Function Room 4', type: 'forum', dayName: 'Fri', description: 'Speakers: Mr. Erel Narida (Keynote), Ms. Chester Ann Yap, Ms. Joyce Anne Asilo, Mr. Nilo A. Apuada' },
+            
+            { id: 505, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'R&D Forum and EE Research Contest', venue: 'Meeting Room 4, 5, 6', type: 'competition', dayName: 'Fri' },
+            
+            { id: 506, dateStr: '2025-11-28', day: 28, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Young Professionals Forum on Standardization', venue: 'Philflex Bay Center', type: 'forum', dayName: 'Fri' },
+
+            // Nov 29 (Saturday) - UPDATED
+            { id: 601, dateStr: '2025-11-29', day: 29, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'Tech Session: Power System Ops & Protection', venue: 'Function Room 2', type: 'technical', dayName: 'Sat', description: 'AM Speakers (8-12): Engr. Rolly P. Clamor (Smart Automation), Engr. Ramon L. Asaña (Smart Grid)' },
+
+            { id: 602, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 11, endM: 30, timeDisplay: '8:30 AM - 11:30 AM', title: 'Registered Master Electrician (RME) Forum', venue: 'Function Room 3', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Arthur N. Escalante, Engr. Florencio D. Berenguel, Engr. Christopher T. Bellaflor, Engr. Riz T. Bautista, Hon. Francis V. Mapile' },
+
+            { id: 603, dateStr: '2025-11-29', day: 29, startH: 8, startM: 30, endH: 10, endM: 30, timeDisplay: '8:30 AM - 10:30 AM', title: 'FORUM: AI Innovation & Industry Transformation', venue: 'Function Room 4', type: 'forum', dayName: 'Sat', description: 'Speakers: Mr. Jo Cops (Keynote), Ms. Catherine Jalandoni (Keynote), Dr. Michael Pacis, Mr. Min Chih Tsai' },
+            
+            { id: 604, dateStr: '2025-11-29', day: 29, startH: 10, startM: 30, endH: 12, endM: 0, timeDisplay: '10:30 AM - 12:00 PM', title: 'FORUM: Power Utilities & Sustainable Growth', venue: 'Function Room 4', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Ronnie L. Aperocho (Keynote), Engr. Giovanni Randolfo A. Galang, Mr. Patrick Aquino, Engr. Ferdinand P. Villareal' },
+
+            { id: 605, dateStr: '2025-11-29', day: 29, startH: 13, startM: 0, endH: 15, endM: 0, timeDisplay: '1:00 PM - 3:00 PM', title: 'Tech Session: Financial Success & Offshore Wind', venue: 'Function Room 1-4', type: 'technical', dayName: 'Sat', description: 'Speakers: Dr. Rowena De Guzman (Financial Success), Hon. Fortunato C. Leynes (Offshore Wind Challenges)' },
+            
+            { id: 606, dateStr: '2025-11-29', day: 29, startH: 16, startM: 30, endH: 20, endM: 0, timeDisplay: '4:30 PM - 8:00 PM', title: 'Closing Ceremonies', venue: 'Function Rooms 1-4', type: 'plenary', dayName: 'Sat' },
+            
+            { id: 607, dateStr: '2025-11-29', day: 29, startH: 8, startM: 0, endH: 17, endM: 0, timeDisplay: '8:00 AM - 5:00 PM', title: 'AAPER Forum: Energized Regional Growth', venue: 'Meeting Room 7-8', type: 'forum', dayName: 'Sat', description: 'Speakers: Engr. Sheila C. Cabaraban (Guest), Ir. Simon Yeong Chin Chow, Engr. Federico A. Monsada, Engr. Romulo R. Agatep, Engr. Nelson S. Andres, Dr. Edison E. Mojica, Dr. Romano Q. Neyra' },
         ];
 
         const venueData = [
@@ -399,6 +424,14 @@
                                 {event.timeDisplay}
                             </div>
                             <h3 className="text-lg font-bold text-gray-800 leading-tight mb-2">{event.title}</h3>
+                            
+                            {/* NEW: Description field for speakers/topics */}
+                            {event.description && (
+                                <div className="text-xs text-gray-600 mb-2 italic border-l-2 border-gray-200 pl-2">
+                                    {event.description}
+                                </div>
+                            )}
+
                             <div className="flex items-center text-gray-500 text-sm mb-1">
                                 <i className="fas fa-map-marker-alt w-4 text-center mr-2 text-gray-400"></i>
                                 {event.venue}
